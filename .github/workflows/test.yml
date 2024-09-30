@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./web
+        working-directory: ./frontend
 
     steps:
       - name: Checkout code
@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: './web/.nvmrc'
+          node-version-file: './frontend/.nvmrc'
 
       - name: Run npm install
         run: npm ci

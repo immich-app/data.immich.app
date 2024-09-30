@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       parameters: ${{ steps.parameters.outputs.result }}
+
     steps:
       - if: ${{ github.event.workflow_run.conclusion == 'failure' }}
         run: echo 'The triggering workflow failed' && exit 1
@@ -105,7 +106,7 @@ jobs:
                repo: context.repo.repo,
                run_id: context.payload.workflow_run.id,
             });
-            let matchArtifact = allArtifacts.data.artifacts.find((artifact) => artifact.name == "build-output-web");
+            let matchArtifact = allArtifacts.data.artifacts.find((artifact) => artifact.name == "build-output");
             let download = await github.rest.actions.downloadArtifact({
                owner: context.repo.owner,
                repo: context.repo.repo,
@@ -116,39 +117,41 @@ jobs:
             fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/build-output.zip`, Buffer.from(download.data));
 
       - name: Unzip artifact
-        run: unzip "${{ github.workspace }}/build-output.zip" -d "${{ github.workspace }}/build"
+        run: unzip "${{ github.workspace }}/build-output.zip" -d "${{ github.workspace }}/dist"
 
       - name: Deploy App
         env:
           TF_VAR_prefix_name: ${{ steps.parameters.outputs.name }}
           TF_VAR_prefix_event_type: ${{ steps.parameters.outputs.event }}
-          TF_VAR_app_url: data.immich.app
-          TF_VAR_app_name: immich-data
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
+          DIST_DIR: ${{ github.workspace }}/dist
+          ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+          VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tg_version: '0.58.12'
           tofu_version: '1.7.1'
-          tg_dir: 'deployment/modules/cloudflare/static-pages'
-          tg_command: 'apply'
+          tg_dir: 'deployment/modules/cloudflare/'
+          tg_command: 'run-all apply'
 
       - name: Deploy App Output
         id: terraform-output
         env:
           TF_VAR_prefix_name: ${{ steps.parameters.outputs.name }}
           TF_VAR_prefix_event_type: ${{ steps.parameters.outputs.event }}
-          TF_VAR_app_url: data.immich.app
-          TF_VAR_app_name: immich-data
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
+          DIST_DIR: ${{ github.workspace }}/dist
+          ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+          VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tg_version: '0.58.12'
           tofu_version: '1.7.1'
-          tg_dir: 'deployment/modules/cloudflare/static-pages'
+          tg_dir: 'deployment/modules/cloudflare/'
           tg_command: 'output -json'
 
       - name: Output Cleaning
@@ -159,6 +162,7 @@ jobs:
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
+        if: ${{ matrix.name == 'frontend' }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_PAGES_UPLOAD }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -169,7 +173,7 @@ jobs:
 
       - name: Comment
         uses: actions-cool/maintain-one-comment@v3
-        if: ${{ steps.parameters.outputs.event == 'pr' }}
+        if: ${{ matrix.name == 'frontend' && steps.parameters.outputs.event == 'pr' }}
         with:
           number: ${{ fromJson(needs.checks.outputs.parameters).pr_number }}
           body: |
