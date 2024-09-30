@@ -1,0 +1,47 @@
+{
+  "name": "my.immich.app",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "vite dev",
+    "build": "npm run sync && vite build",
+    "preview": "vite preview",
+    "check": "npm run sync && svelte-check --tsconfig ./tsconfig.json",
+    "sync": "svelte-kit sync",
+    "test": "vitest",
+    "lint": "prettier --check . && eslint . --max-warnings 0",
+    "lint:fix": "npm run lint -- --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write ."
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.2",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@types/eslint": "^9.0.0",
+    "@types/luxon": "^3.4.2",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-svelte": "^2.36.0",
+    "globals": "^15.0.0",
+    "postcss": "^8.4.39",
+    "prettier": "^3.1.1",
+    "prettier-plugin-svelte": "^3.1.2",
+    "svelte": "^4.2.7",
+    "svelte-check": "^4.0.0",
+    "tailwindcss": "^3.4.4",
+    "tslib": "^2.4.1",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^8.0.0-alpha.20",
+    "vite": "^5.0.3",
+    "vitest": "^2.0.0"
+  },
+  "type": "module",
+  "dependencies": {
+    "@mdi/js": "^7.4.47",
+    "@unovis/svelte": "^1.4.3-beta.0",
+    "@unovis/ts": "^1.4.3-beta.0",
+    "luxon": "^3.5.0"
+  }
+}
