@@ -38,5 +38,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-output-web
-          path: build
+          path: web/build
           retention-days: 1
