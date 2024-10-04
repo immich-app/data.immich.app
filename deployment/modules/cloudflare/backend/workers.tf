@@ -37,12 +37,12 @@ locals {
 }
 
 output "data_api_url" {
-  value = "https://${var.env == "prod" ? locals.data_api_prod_url : locals.data_api_dev_url}"
+  value = "https://${var.env == "prod" ? local.data_api_prod_url : local.data_api_dev_url}"
 }
 
 resource "cloudflare_workers_route" "data_api_prod" {
   count       = var.env == "prod" ? 1 : 0
-  pattern     = "${locals.data_api_prod_url}*"
+  pattern     = "${local.data_api_prod_url}*"
   script_name = cloudflare_workers_script.data_api.name
   zone_id     = data.cloudflare_zone.immich_app.zone_id
 }
