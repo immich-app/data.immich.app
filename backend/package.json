@@ -23,7 +23,7 @@
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitest/coverage-istanbul": "^2.1.1",
-    "eslint": "^8.50.0",
+    "eslint": "^9.0.0",
     "eslint-plugin-import": "^2.29.1",
     "express": "^4.19.2",
     "prettier-plugin-organize-imports": "^4.0.0",
