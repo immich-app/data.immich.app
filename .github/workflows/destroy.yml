@@ -18,7 +18,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
           DIST_DIR: ${{ github.workspace }}/dist
-          ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+          ENVIRONMENT: dev
           VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
         uses: gruntwork-io/terragrunt-action@v2
         with:
