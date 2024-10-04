@@ -1,4 +1,4 @@
-name: Docs destroy
+name: Destroy
 on:
   pull_request_target:
     types: [closed]
@@ -10,10 +10,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Destroy Docs Subdomain
+      - name: Destroy Frontend Subdomain
         env:
-          TF_VAR_prefix_name: ${{ steps.parameters.outputs.name }}
-          TF_VAR_prefix_event_type: ${{ steps.parameters.outputs.event }}
+          TF_VAR_prefix_name: 'pr-${{ github.event.number }}'
+          TF_VAR_prefix_event_type: 'pr'
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
