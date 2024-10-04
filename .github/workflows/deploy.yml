@@ -203,6 +203,6 @@ jobs:
           body: |
             🚀 Preview deployed to:
             - Frontend URL: https://${{ fromJson(steps.clean.outputs.frontend).immich_app_branch_subdomain.value }}
-            - Backend URL: https://${{ fromJson(steps.clean.outputs.backend).data_api_url.value }}
+            - Backend URL: ${{ fromJson(steps.clean.outputs.backend).data_api_url.value }}
           emojis: 'rocket'
           body-include: '<!-- web PR URL -->'
