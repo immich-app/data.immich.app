@@ -1,5 +1,5 @@
-data "cloudflare_zone" "immich_cloud" {
-  name = "immich.cloud"
+data "cloudflare_zone" "immich_app" {
+  name = "immich.app"
 }
 
 resource "cloudflare_workers_script" "data_api" {
@@ -42,6 +42,6 @@ resource "cloudflare_workers_route" "data_api_prod" {
   count      = var.env == "prod" ? 1 : 0
   pattern    = "data.immich.app/api*"
   script_name = cloudflare_workers_script.data_api.name
-  zone_id    = data.cloudflare_zone.immich_cloud.zone_id
+  zone_id    = data.cloudflare_zone.immich_app.zone_id
 }
 
