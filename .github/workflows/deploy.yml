@@ -187,7 +187,6 @@ jobs:
 
       - name: Publish Frontend to Cloudflare Pages
         uses: cloudflare/pages-action@v1
-        if: ${{ matrix.name == 'frontend' }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_PAGES_UPLOAD }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -198,7 +197,7 @@ jobs:
 
       - name: Comment
         uses: actions-cool/maintain-one-comment@v3
-        if: ${{ matrix.name == 'frontend' && steps.parameters.outputs.event == 'pr' }}
+        if: ${{ steps.parameters.outputs.event == 'pr' }}
         with:
           number: ${{ fromJson(needs.checks.outputs.parameters).pr_number }}
           body: |
