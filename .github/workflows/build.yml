@@ -36,6 +36,8 @@ jobs:
 
       - name: Run build
         run: npm run build
+        env:
+          PUBLIC_IMMICH_BACKEND_URL: 'PUBLIC_IMMICH_BACKEND_URL'
 
       - name: Upload build output
         uses: actions/upload-artifact@v4
@@ -55,4 +57,3 @@ jobs:
         with:
           name: build-output
           retention-days: 1
-

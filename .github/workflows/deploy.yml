@@ -136,8 +136,8 @@ jobs:
           tg_dir: 'deployment/modules/cloudflare/'
           tg_command: 'run-all apply'
 
-      - name: Deploy App Output
-        id: terraform-output
+      - name: Deploy Backend Output
+        id: terraform-backend-output
         env:
           TF_VAR_prefix_name: ${{ steps.parameters.outputs.name }}
           TF_VAR_prefix_event_type: ${{ steps.parameters.outputs.event }}
@@ -151,23 +151,48 @@ jobs:
         with:
           tg_version: '0.58.12'
           tofu_version: '1.7.1'
-          tg_dir: 'deployment/modules/cloudflare/'
+          tg_dir: 'deployment/modules/cloudflare/backend'
+          tg_command: 'output -json'
+
+      - name: Deploy Frontend Output
+        id: terraform-frontend-output
+        env:
+          TF_VAR_prefix_name: ${{ steps.parameters.outputs.name }}
+          TF_VAR_prefix_event_type: ${{ steps.parameters.outputs.event }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
+          DIST_DIR: ${{ github.workspace }}/dist
+          ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+          VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
+        uses: gruntwork-io/terragrunt-action@v2
+        with:
+          tg_version: '0.58.12'
+          tofu_version: '1.7.1'
+          tg_dir: 'deployment/modules/cloudflare/frontend'
           tg_command: 'output -json'
 
       - name: Output Cleaning
         id: clean
         run: |
-          TG_OUT=$(echo '${{ steps.terraform-output.outputs.tg_action_output }}' | sed 's|%0A|\n|g ; s|%3C|<|g' | jq -c .)
-          echo "output=$TG_OUT" >> $GITHUB_OUTPUT
+          TG_BACKEND_OUT=$(echo '${{ steps.terraform-backend-output.outputs.tg_action_output }}' | sed 's|%0A|\n|g ; s|%3C|<|g' | jq -c .)
+          TG_FRONTEND_OUT=$(echo '${{ steps.terraform-frontend-output.outputs.tg_action_output }}' | sed 's|%0A|\n|g ; s|%3C|<|g' | jq -c .)
+          echo "backend=$TG_BACKEND_OUT" >> $GITHUB_OUTPUT
+          echo "frontend=$TG_FRONTEND_OUT" >> $GITHUB_OUTPUT
 
-      - name: Publish to Cloudflare Pages
+      - name: Set Backend URL
+        run: |
+          ESCAPED_REPLACE=$(printf '%s\n' '${{ fromJson(steps.clean.outputs.backend).data_api_url.value }}' | sed -e 's/[\/&]/\\&/g')
+          find dist/frontend/_app/immutable -type f -exec sed -i "s/PUBLIC_IMMICH_BACKEND_URL/$ESCAPED_REPLACE/g" {} +
+
+      - name: Publish Frontend to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         if: ${{ matrix.name == 'frontend' }}
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_PAGES_UPLOAD }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ fromJson(steps.clean.outputs.output).pages_project_name.value }}
-          directory: 'build'
+          projectName: ${{ fromJson(steps.clean.outputs.frontend).pages_project_name.value }}
+          directory: 'dist/frontend'
           branch: ${{ steps.parameters.outputs.name }}
           wranglerVersion: '3'
 
@@ -177,6 +202,8 @@ jobs:
         with:
           number: ${{ fromJson(needs.checks.outputs.parameters).pr_number }}
           body: |
-            📖 Preview of web deployed to [${{ fromJson(steps.clean.outputs.output).immich_app_branch_subdomain.value }}](https://${{ fromJson(steps.clean.outputs.output).immich_app_branch_subdomain.value }})
+            🚀 Preview deployed to:
+            - Frontend URL: https://${{ fromJson(steps.clean.outputs.frontend).immich_app_branch_subdomain.value }}
+            - Backend URL: https://${{ fromJson(steps.clean.outputs.backend).data_api_url.value }}
           emojis: 'rocket'
           body-include: '<!-- web PR URL -->'

@@ -32,16 +32,17 @@ data "http" "data_api_deployments" {
 
 locals {
   data_api_version_id = split("-", jsondecode(data.http.data_api_deployments.response_body).result.deployments[0].versions[0].version_id)[0]
+  data_api_prod_url   = "data.immich.app/api"
+  data_api_dev_url    = "${local.data_api_version_id}-${cloudflare_workers_script.data_api.name}.immich.workers.dev"
 }
 
-output "data_api_preview_url" {
-  value = "https://${local.data_api_version_id}-${cloudflare_workers_script.data_api.name}.immich.workers.dev"
+output "data_api_url" {
+  value = "https://${var.env == "prod" ? locals.data_api_prod_url : locals.data_api_dev_url}"
 }
 
 resource "cloudflare_workers_route" "data_api_prod" {
-  count      = var.env == "prod" ? 1 : 0
-  pattern    = "data.immich.app/api*"
+  count       = var.env == "prod" ? 1 : 0
+  pattern     = "${locals.data_api_prod_url}*"
   script_name = cloudflare_workers_script.data_api.name
-  zone_id    = data.cloudflare_zone.immich_app.zone_id
+  zone_id     = data.cloudflare_zone.immich_app.zone_id
 }
-
