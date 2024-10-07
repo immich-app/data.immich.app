@@ -23,10 +23,16 @@ async function handleRequest(
   deferredRepository: CloudflareDeferredRepository,
   metrics: IMetricsRepository,
 ) {
+  deferredRepository.defer(() => env.DATA_QUEUE.send({ messages: [{ hello: 'world' }] }));
   return new Response('Hello world!');
 }
 
 export default {
+  async queue(batch, env): Promise<void> {
+    const messages = JSON.stringify(batch.messages);
+    console.log(`consumed from our queue: ${messages}`);
+  },
+
   async fetch(request, env, ctx): Promise<Response> {
     const workerEnv = env as WorkerEnv;
     const deferredRepository = new CloudflareDeferredRepository(ctx);
