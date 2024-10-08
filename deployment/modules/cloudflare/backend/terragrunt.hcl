@@ -18,12 +18,14 @@ locals {
   dist_dir    = get_env("DIST_DIR")
   vmetrics_api_token = get_env("VMETRICS_API_TOKEN")
   env                = get_env("ENVIRONMENT")
+  stage              = get_env("STAGE", "")
 }
 
 inputs = {
   dist_dir    = local.dist_dir
   vmetrics_api_token = local.vmetrics_api_token
   env                = local.env
+  stage              = local.stage
 }
 
 remote_state {
@@ -31,6 +33,6 @@ remote_state {
 
   config = {
     conn_str    = get_env("TF_STATE_POSTGRES_CONN_STR")
-    schema_name = "${local.env}_cloudflare_data_worker"
+    schema_name = "cloudflare_data_worker_${local.env}${local.stage}"
   }
 }

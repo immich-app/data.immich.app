@@ -34,8 +34,10 @@ jobs:
               const shouldDeploy = !isFork && branch == "main";
               parameters = {
                 event: "branch",
-                name: "main",
-                shouldDeploy
+                shouldDeploy,
+                environment: "prod",
+                stage: "",
+                pagesBranch: "main"
               };
             } else if (eventType == "pull_request") {
               let pull_number = context.payload.workflow_run.pull_requests[0]?.number;
@@ -59,15 +61,15 @@ jobs:
 
               parameters = {
                 event: "pr",
-                name: `pr-${pull_number}`,
                 pr_number: pull_number,
-                shouldDeploy: true
+                shouldDeploy: true,
+                environment: "dev",
+                stage: `pr-${pull_number}`,
+                pagesBranch: `pr-${pull_number}`
               };
             } else if (eventType == "release") {
               parameters = {
-                event: "release",
-                name: context.payload.workflow_run.head_branch,
-                shouldDeploy: !isFork
+                shouldDeploy: false
               };
             }
 
@@ -90,12 +92,13 @@ jobs:
           script: |
             const json = `${{ needs.checks.outputs.parameters }}`;
             const parameters = JSON.parse(json);
-            core.setOutput("event", parameters.event);
-            core.setOutput("name", parameters.name);
             core.setOutput("shouldDeploy", parameters.shouldDeploy);
+            core.setOutput("event", parameters.event);
+            core.setOutput("pagesBranch", parameters.pagesBranch);
+            core.setOutput("environment", parameters.environment);
 
       - run: |
-          echo "Starting docs deployment for ${{ steps.parameters.outputs.event }} ${{ steps.parameters.outputs.name }}"
+          echo "Starting docs deployment for event: ${{ steps.parameters.outputs.event }}, environment: ${{ steps.parameters.outputs.environment }}, stage: ${{ steps.parameters.outputs.stage }}"
 
       - name: Download artifact
         uses: actions/github-script@v7
@@ -121,14 +124,14 @@ jobs:
 
       - name: Deploy App
         env:
-          TF_VAR_prefix_name: ${{ steps.parameters.outputs.name }}
-          TF_VAR_prefix_event_type: ${{ steps.parameters.outputs.event }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
           DIST_DIR: ${{ github.workspace }}/dist
-          ENVIRONMENT: ${{ steps.parameters.outputs.name == 'main' && 'prod' || 'dev'}}
+          ENVIRONMENT: ${{ steps.parameters.outputs.environment }}
           VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
+          STAGE: ${{ steps.parameters.outputs.stage }}
+          TF_VAR_pages_branch: ${{ steps.parameters.outputs.pagesBranch }}
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tg_version: '0.58.12'
@@ -139,14 +142,14 @@ jobs:
       - name: Deploy Backend Output
         id: terraform-backend-output
         env:
-          TF_VAR_prefix_name: ${{ steps.parameters.outputs.name }}
-          TF_VAR_prefix_event_type: ${{ steps.parameters.outputs.event }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
           DIST_DIR: ${{ github.workspace }}/dist
-          ENVIRONMENT: ${{ steps.parameters.outputs.name == 'main' && 'prod' || 'dev'}}
+          ENVIRONMENT: ${{ steps.parameters.outputs.environment }}
           VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
+          STAGE: ${{ steps.parameters.outputs.stage }}
+          TF_VAR_pages_branch: ${{ steps.parameters.outputs.pagesBranch }}
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tg_version: '0.58.12'
@@ -157,14 +160,14 @@ jobs:
       - name: Deploy Frontend Output
         id: terraform-frontend-output
         env:
-          TF_VAR_prefix_name: ${{ steps.parameters.outputs.name }}
-          TF_VAR_prefix_event_type: ${{ steps.parameters.outputs.event }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
           DIST_DIR: ${{ github.workspace }}/dist
-          ENVIRONMENT: ${{ steps.parameters.outputs.name == 'main' && 'prod' || 'dev'}}
+          ENVIRONMENT: ${{ steps.parameters.outputs.environment }}
           VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
+          STAGE: ${{ steps.parameters.outputs.stage }}
+          TF_VAR_pages_branch: ${{ steps.parameters.outputs.pagesBranch }}
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tg_version: '0.58.12'
@@ -192,7 +195,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ fromJson(steps.clean.outputs.frontend).pages_project_name.value }}
           directory: 'dist/frontend'
-          branch: ${{ steps.parameters.outputs.name }}
+          branch: ${{ steps.parameters.outputs.pagesBranch }}
           wranglerVersion: '3'
 
       - name: Comment

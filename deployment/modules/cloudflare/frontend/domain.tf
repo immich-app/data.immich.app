@@ -9,7 +9,7 @@ resource "cloudflare_record" "immich_app_branch_subdomain" {
   proxied = true
   ttl     = 1
   type    = "CNAME"
-  content   = local.is_main ? data.terraform_remote_state.cloudflare_account.outputs.static_pages_project_subdomains["data.immich.app"] : "${replace(var.prefix_name, "/\\/|\\./", "-")}.${data.terraform_remote_state.cloudflare_account.outputs.static_pages_project_subdomains["data.immich.app"]}"
+  content = var.pages_branch == "main" ? data.terraform_remote_state.cloudflare_account.outputs.static_pages_project_subdomains["data.immich.app"] : "${var.pages_branch}.${data.terraform_remote_state.cloudflare_account.outputs.static_pages_project_subdomains["data.immich.app"]}"
   zone_id = data.terraform_remote_state.cloudflare_account.outputs.immich_app_zone_id
 }
 

@@ -8,3 +8,14 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 DEPLOYMENT_KEY = "20240812"
 ENVIRONMENT = "production"
+
+[[queues.producers]]
+  queue = "data-ingest-dev"
+  binding = "DATA_QUEUE"
+
+[[queues.consumers]]
+  queue = "data-ingest-dev"
+  max_batch_size = 10
+  max_batch_timeout = 30
+  max_retries = 10
+  dead_letter_queue = "data-ingest-dev-dlq"

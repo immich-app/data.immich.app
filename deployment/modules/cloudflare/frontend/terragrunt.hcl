@@ -15,7 +15,13 @@ include "root" {
 }
 
 locals {
-  prefix_name = get_env("TF_VAR_prefix_name")
+  env = get_env("ENVIRONMENT")
+  stage = get_env("STAGE", "")
+}
+
+inputs = {
+  env = local.env
+  stage = local.stage
 }
 
 dependencies {
@@ -27,6 +33,6 @@ remote_state {
 
   config = {
     conn_str = get_env("TF_STATE_POSTGRES_CONN_STR")
-    schema_name = "prod_cloudflare_immich_app_data_${local.prefix_name}"
+    schema_name = "prod_cloudflare_immich_app_data_${local.env}${local.stage}"
   }
 }
