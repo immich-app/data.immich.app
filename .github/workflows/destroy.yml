@@ -12,20 +12,20 @@ jobs:
 
       - name: Destroy Frontend Subdomain
         env:
-          TF_VAR_prefix_name: 'pr-${{ github.event.number }}'
-          TF_VAR_prefix_event_type: 'pr'
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
           DIST_DIR: ${{ github.workspace }}/dist
           ENVIRONMENT: dev
           VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
+          STAGE: pr-${{ github.event.number }}
+          TF_VAR_pages_branch: ${{ steps.parameters.outputs.pagesBranch }}
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tg_version: '0.58.12'
           tofu_version: '1.7.1'
-          tg_dir: 'deployment/modules/cloudflare/frontend'
-          tg_command: 'destroy'
+          tg_dir: 'deployment/modules/cloudflare'
+          tg_command: 'run-all destroy'
 
       - name: Comment
         uses: actions-cool/maintain-one-comment@v3

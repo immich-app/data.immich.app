@@ -1,6 +1,6 @@
 resource "cloudflare_queue" "data_ingest" {
   account_id = var.cloudflare_account_id
-  name       = "data-ingest-${var.env}"
+  name       = "data-ingest${local.resource_suffix}"
 
   provisioner "local-exec" {
     on_failure = fail
@@ -28,7 +28,7 @@ resource "cloudflare_queue" "data_ingest" {
 
 resource "cloudflare_queue" "data_ingest_dlq" {
   account_id = var.cloudflare_account_id
-  name       = "data-ingest-${var.env}-dlq"
+  name       = "data-ingest${local.resource_suffix}-dlq"
 }
 
 
