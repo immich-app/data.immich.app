@@ -96,6 +96,7 @@ jobs:
             core.setOutput("event", parameters.event);
             core.setOutput("pagesBranch", parameters.pagesBranch);
             core.setOutput("environment", parameters.environment);
+            core.setOutput("stage", parameters.stage);
 
       - run: |
           echo "Starting docs deployment for event: ${{ steps.parameters.outputs.event }}, environment: ${{ steps.parameters.outputs.environment }}, stage: ${{ steps.parameters.outputs.stage }}"
