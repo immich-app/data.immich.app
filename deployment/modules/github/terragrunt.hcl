@@ -4,14 +4,16 @@ terraform {
   extra_arguments custom_vars {
     commands = get_terraform_commands_that_need_vars()
   }
-}
 
-include "cloudflare" {
-  path = find_in_parent_folders("cloudflare.hcl")
+  include_in_copy = ["repo-files/*"]
 }
 
 include "root" {
   path = find_in_parent_folders("root.hcl")
+}
+
+dependencies {
+  paths = ["../cloudflare/backend", "../cloudflare/frontend"]
 }
 
 locals {
@@ -24,15 +26,11 @@ inputs = {
   stage = local.stage
 }
 
-dependencies {
-  paths = ["../backend"]
-}
-
 remote_state {
   backend = "pg"
 
   config = {
     conn_str = get_env("TF_STATE_POSTGRES_CONN_STR")
-    schema_name = "data_immich_app_cloudflare_frontend_${local.env}${local.stage}"
+    schema_name = "data_immich_app_github_org_${local.env}${local.stage}"
   }
 }
