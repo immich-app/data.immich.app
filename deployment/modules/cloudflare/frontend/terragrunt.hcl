@@ -33,6 +33,6 @@ remote_state {
 
   config = {
     conn_str = get_env("TF_STATE_POSTGRES_CONN_STR")
-    schema_name = "prod_cloudflare_immich_app_data_${local.env}${local.stage}"
+    schema_name = "data_immich_app_cloudflare_frontend_${local.env}${local.stage}"
   }
 }
