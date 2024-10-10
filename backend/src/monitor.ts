@@ -1,5 +1,5 @@
-import { AsyncFn, Operation, Options } from './interface';
-import { Metric } from './repository';
+import { Metric } from 'src/interfaces/metrics.interface';
+import { AsyncFn, Operation, Options } from 'src/types';
 
 export function monitorAsyncFunction<T extends AsyncFn>(
   operationPrefix: string,

@@ -3,5 +3,6 @@
 interface Env {
 	DEPLOYMENT_KEY: "20240812";
 	ENVIRONMENT: "production";
+	SLUG: "slug";
 	DATA_QUEUE: Queue;
 }
