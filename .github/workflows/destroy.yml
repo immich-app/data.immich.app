@@ -24,7 +24,7 @@ jobs:
         with:
           tg_version: '0.58.12'
           tofu_version: '1.7.1'
-          tg_dir: 'deployment/modules/cloudflare'
+          tg_dir: 'deployment/modules/'
           tg_command: 'run-all destroy'
 
       - name: Comment
