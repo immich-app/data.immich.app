@@ -25,7 +25,7 @@ jobs:
           tg_version: '0.58.12'
           tofu_version: '1.7.1'
           tg_dir: 'deployment/modules/cloudflare'
-          tg_command: 'run-all destroy'
+          tg_command: 'run-all destroy -refresh=false'
 
       - name: Comment
         uses: actions-cool/maintain-one-comment@v3
