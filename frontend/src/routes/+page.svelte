@@ -14,7 +14,7 @@
   >
     <div class="w-full h-full flex gap-2 place-items-center mb-2">
       <img src="/img/immich-logo.svg" alt={'immich-logo'} class="h-12 w-12" />
-      <p class="dark:text-gray-100 text-2xl font-medium text-immich-primary">Immich Data</p>
+      <p class="dark:text-gray-100 text-2xl font-medium text-immich-primary">Immich Data Test</p>
     </div>
 
     <section class="flex flex-col gap-4">
