@@ -20,6 +20,10 @@ jobs:
           VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
           STAGE: pr-${{ github.event.number }}
           TF_VAR_pages_branch: ${{ steps.parameters.outputs.pagesBranch }}
+          GITHUB_APP_INSTALLATION_ID: ${{ secrets.TF_APP_INSTALLATION_ID }}
+          GITHUB_APP_ID: ${{ secrets.TF_APP_ID }}
+          GITHUB_APP_PEM_FILE: ${{ secrets.TF_APP_PEM_FILE }}
+          GITHUB_OWNER: ${{ secrets.TF_APP_GITHUB_OWNER }}
         uses: gruntwork-io/terragrunt-action@v2
         with:
           tg_version: '0.58.12'
