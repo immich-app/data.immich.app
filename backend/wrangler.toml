@@ -8,6 +8,7 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 DEPLOYMENT_KEY = "20240812"
 ENVIRONMENT = "production"
+STAGE = "main"
 SLUG = "slug"
 
 [[queues.producers]]

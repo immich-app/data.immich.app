@@ -13,7 +13,8 @@ export class Metric {
   private _tags: Map<string, string> = new Map();
   private _timestamp = performance.now();
   private _fields = new Map<string, { value: any; type: 'duration' | 'int' }>();
-  private constructor(private _name: string) {}
+
+  constructor(private _name: string) {}
 
   static create(name: string) {
     return new Metric(name);

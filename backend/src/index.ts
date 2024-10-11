@@ -18,7 +18,7 @@ const asTags = (request: FetchRequest) => ({
 
 const newApiWorker = (request: FetchRequest, env: WorkerEnv, ctx: ExecutionContext) => {
   const deferredRepository = new CloudflareDeferredRepository(ctx);
-  const influxProvider = new InfluxMetricsProvider(env.VMETRICS_API_TOKEN, env.ENVIRONMENT);
+  const influxProvider = new InfluxMetricsProvider(env.VMETRICS_API_URL, env.VMETRICS_API_TOKEN);
   deferredRepository.defer(() => influxProvider.flush());
   const metrics = new CloudflareMetricsRepository('data', asTags(request), [influxProvider]);
 
@@ -52,13 +52,16 @@ const router = AutoRouter<FetchRequest, [WorkerEnv, ExecutionContext]>()
 
 export default {
   fetch: router.fetch,
-  queue: (batch, env) => {
-    const influxProvider = new InfluxMetricsProvider(env.VMETRICS_API_TOKEN, env.ENVIRONMENT);
+  queue: async (batch, env) => {
+    const influxProvider = new InfluxMetricsProvider(env.VMETRICS_API_URL, env.VMETRICS_API_TOKEN);
     const metricsRepository = new CloudflareMetricsRepository('data', {}, [influxProvider]);
-    const ingestProcessWorker = new IngestProcessorWorker(metricsRepository);
+    const envTag = [env.ENVIRONMENT, env.STAGE].filter(Boolean).join('_');
+    const ingestProcessWorker = new IngestProcessorWorker(metricsRepository, envTag);
 
     if (batch.queue.startsWith('data-ingest')) {
-      return ingestProcessWorker.process(batch);
+      await ingestProcessWorker.handleMessages(batch);
     }
+
+    await influxProvider.flush();
   },
 } satisfies ExportedHandler<WorkerEnv, QueueItem>;
