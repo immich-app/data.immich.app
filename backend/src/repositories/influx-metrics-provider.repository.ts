@@ -5,8 +5,8 @@ import { Metric } from 'src/interfaces/metrics.interface';
 export class InfluxMetricsProvider implements IMetricsProviderRepository {
   private metrics: string[] = [];
   constructor(
+    private influxApiUrl: string,
     private influxApiToken: string,
-    private environment: string,
   ) {}
 
   pushMetric(metric: Metric) {
@@ -32,17 +32,14 @@ export class InfluxMetricsProvider implements IMetricsProviderRepository {
       return;
     }
     const metrics = this.metrics.join('\n');
-    if (this.environment === 'prod') {
-      const response = await fetch('https://cf-workers.monitoring.immich.cloud/write', {
-        method: 'POST',
-        body: this.metrics.join('\n'),
-        headers: {
-          Authorization: `Token ${this.influxApiToken}`,
-        },
-      });
-      await response.body?.cancel();
-    } else {
-      console.log(metrics);
-    }
+    const response = await fetch(`${this.influxApiUrl}/write`, {
+      method: 'POST',
+      body: this.metrics.join('\n'),
+      headers: {
+        Authorization: `Token ${this.influxApiToken}`,
+      },
+    });
+    await response.body?.cancel();
+    console.log(metrics);
   }
 }
