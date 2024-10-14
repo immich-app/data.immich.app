@@ -13,9 +13,12 @@ resource "cloudflare_workers_script" "data_api" {
     text = var.env
   }
 
-  plain_text_binding {
-    name = "STAGE"
-    text = var.stage
+  dynamic "plain_text_binding" {
+    for_each = var.stage != "" ? [var.stage] : []
+    content {
+      name = "STAGE"
+      text = var.stage
+    }
   }
 
   plain_text_binding {
@@ -48,9 +51,12 @@ resource "cloudflare_workers_script" "data_ingest_api" {
     text = var.env
   }
 
-  plain_text_binding {
-    name = "STAGE"
-    text = var.stage
+  dynamic "plain_text_binding" {
+    for_each = var.stage != "" ? [var.stage] : []
+    content {
+      name = "STAGE"
+      text = var.stage
+    }
   }
 
   plain_text_binding {
@@ -88,9 +94,12 @@ resource "cloudflare_workers_script" "data_ingest_processor" {
     text = var.env
   }
 
-  plain_text_binding {
-    name = "STAGE"
-    text = var.stage
+  dynamic "plain_text_binding" {
+    for_each = var.stage != "" ? [var.stage] : []
+    content {
+      name = "STAGE"
+      text = var.stage
+    }
   }
 
   plain_text_binding {
