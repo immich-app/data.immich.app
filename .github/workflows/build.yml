@@ -64,7 +64,7 @@ jobs:
       DIST_DIR: ${{ github.workspace }}/dist
       ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
       STAGE: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || '' }}
-      TF_VAR_pages_branch: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.head_ref }}
+      TF_VAR_pages_branch: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref_name }}
       TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
       VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
 
@@ -124,7 +124,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ fromJson(steps.clean.outputs.frontend).pages_project_name.value }}
           directory: 'dist/frontend'
-          branch: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.head_ref }}
+          branch: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref_name }}
           wranglerVersion: '3'
 
       - name: Comment
