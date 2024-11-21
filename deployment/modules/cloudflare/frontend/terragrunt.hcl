@@ -6,22 +6,13 @@ terraform {
   }
 }
 
-include "cloudflare" {
-  path = find_in_parent_folders("cloudflare.hcl")
-}
-
 include "root" {
   path = find_in_parent_folders("root.hcl")
 }
 
 locals {
-  env = get_env("ENVIRONMENT")
-  stage = get_env("STAGE", "")
-}
-
-inputs = {
-  env = local.env
-  stage = local.stage
+  env = get_env("TF_VAR_env")
+  stage = get_env("TF_VAR_stage", "")
 }
 
 dependencies {
@@ -32,7 +23,7 @@ remote_state {
   backend = "pg"
 
   config = {
-    conn_str = get_env("TF_STATE_POSTGRES_CONN_STR")
+    conn_str = get_env("TF_VAR_tf_state_postgres_conn_str")
     schema_name = "data_immich_app_cloudflare_frontend_${local.env}${local.stage}"
   }
 }

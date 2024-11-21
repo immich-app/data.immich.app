@@ -9,6 +9,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  tofu_version: '1.7.1'
+  tg_version: '0.69.0'
+  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+
 jobs:
   build:
     strategy:
@@ -59,14 +64,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: merge
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      DIST_DIR: ${{ github.workspace }}/dist
-      ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
-      STAGE: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || '' }}
+      TF_VAR_dist_dir: ${{ github.workspace }}/dist
+      TF_VAR_stage: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || '' }}
       TF_VAR_pages_branch: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref_name }}
-      TF_STATE_POSTGRES_CONN_STR: ${{ secrets.TF_STATE_POSTGRES_CONN_STR }}
-      VMETRICS_API_TOKEN: ${{ secrets.VMETRICS_API_TOKEN }}
+      OP_SERVICE_ACCOUNT_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.OP_TF_PROD_ENV || secrets.OP_TF_DEV_ENV }}
+      working_dir: 'deployment'
 
     steps:
       - name: Checkout code
@@ -78,51 +80,42 @@ jobs:
           name: build-output
           path: '${{ github.workspace }}/dist'
 
-      - name: Deploy App
-        env:
-          GITHUB_APP_INSTALLATION_ID: ${{ secrets.TF_APP_INSTALLATION_ID }}
-          GITHUB_APP_ID: ${{ secrets.TF_APP_ID }}
-          GITHUB_APP_PEM_FILE: ${{ secrets.TF_APP_PEM_FILE }}
-          GITHUB_OWNER: ${{ secrets.TF_APP_GITHUB_OWNER }}
-        uses: gruntwork-io/terragrunt-action@v2
+      - name: Install 1Password CLI
+        uses: 1password/install-cli-action@v1
+
+      - name: Install Terragrunt
+        uses: eLco/setup-terragrunt@v1
         with:
-          tg_version: '0.58.12'
-          tofu_version: '1.7.1'
-          tg_dir: 'deployment/modules/'
-          tg_command: 'run-all apply'
+          terragrunt_version: ${{ env.tg_version }}
+
+      - name: 'Install OpenTofu'
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ env.tofu_version }}
+          tofu_wrapper: false
+
+      - name: Deploy All
+        working-directory: ${{ env.working_dir }}
+        run: op run --env-file=".env" -- terragrunt run-all apply --terragrunt-non-interactive
 
       - name: Deploy Backend Output
-        id: terraform-backend-output
-        uses: gruntwork-io/terragrunt-action@v2
-        with:
-          tg_version: '0.58.12'
-          tofu_version: '1.7.1'
-          tg_dir: 'deployment/modules/cloudflare/backend'
-          tg_command: 'output -json'
+        id: deploy-backend-output
+        working-directory: ${{ env.working_dir }}/modules/cloudflare/backend
+        run: |
+          echo "output=$(op run --no-masking --env-file='../../../.env' -- terragrunt output -json | jq -c .)" >> $GITHUB_OUTPUT
 
       - name: Deploy Frontend Output
-        id: terraform-frontend-output
-        uses: gruntwork-io/terragrunt-action@v2
-        with:
-          tg_version: '0.58.12'
-          tofu_version: '1.7.1'
-          tg_dir: 'deployment/modules/cloudflare/frontend'
-          tg_command: 'output -json'
-
-      - name: Output Cleaning
-        id: clean
+        id: deploy-frontend-output
+        working-directory: ${{ env.working_dir }}/modules/cloudflare/frontend
         run: |
-          TG_BACKEND_OUT=$(echo '${{ steps.terraform-backend-output.outputs.tg_action_output }}' | sed 's|%0A|\n|g ; s|%3C|<|g' | jq -c .)
-          TG_FRONTEND_OUT=$(echo '${{ steps.terraform-frontend-output.outputs.tg_action_output }}' | sed 's|%0A|\n|g ; s|%3C|<|g' | jq -c .)
-          echo "backend=$TG_BACKEND_OUT" >> $GITHUB_OUTPUT
-          echo "frontend=$TG_FRONTEND_OUT" >> $GITHUB_OUTPUT
+          echo "output=$(op run --no-masking --env-file='../../../.env' -- terragrunt output -json | jq -c .)" >> $GITHUB_OUTPUT
 
       - name: Publish Frontend to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_PAGES_UPLOAD }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ fromJson(steps.clean.outputs.frontend).pages_project_name.value }}
+          projectName: ${{ fromJson(steps.deploy-frontend-output.outputs.output).pages_project_name.value }}
           directory: 'dist/frontend'
           branch: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref_name }}
           wranglerVersion: '3'
@@ -134,7 +127,7 @@ jobs:
           number: ${{ github.event.number }}
           body: |
             🚀 Preview deployed to:
-            - Frontend URL: https://${{ fromJson(steps.clean.outputs.frontend).immich_app_branch_subdomain.value }}
-            - Backend URL: ${{ fromJson(steps.clean.outputs.backend).data_api_url.value }}
+            - Frontend URL: https://${{ fromJson(steps.deploy-frontend-output.outputs.output).immich_app_branch_subdomain.value }}
+            - Backend URL: ${{ fromJson(steps.deploy-backend-output.outputs.output).data_api_url.value }}
           emojis: 'rocket'
           body-include: '<!-- web PR URL -->'

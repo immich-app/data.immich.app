@@ -6,33 +6,19 @@ terraform {
   }
 }
 
-include "cloudflare" {
-  path = find_in_parent_folders("cloudflare.hcl")
-}
-
 include "root" {
   path = find_in_parent_folders("root.hcl")
 }
 
 locals {
-  dist_dir    = get_env("DIST_DIR")
-  vmetrics_api_token = get_env("VMETRICS_API_TOKEN")
-  env                = get_env("ENVIRONMENT")
-  stage              = get_env("STAGE", "")
+  env                = get_env("TF_VAR_env")
+  stage              = get_env("TF_VAR_stage", "")
 }
-
-inputs = {
-  dist_dir    = local.dist_dir
-  vmetrics_api_token = local.vmetrics_api_token
-  env                = local.env
-  stage              = local.stage
-}
-
 remote_state {
   backend = "pg"
 
   config = {
-    conn_str    = get_env("TF_STATE_POSTGRES_CONN_STR")
+    conn_str    = get_env("TF_VAR_tf_state_postgres_conn_str")
     schema_name = "data_immich_app_cloudflare_backend_${local.env}${local.stage}"
   }
 }
