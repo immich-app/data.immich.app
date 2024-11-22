@@ -1,5 +1,5 @@
 locals {
-  tf_state_postgres_conn_str = get_env("TF_STATE_POSTGRES_CONN_STR")
+  tf_state_postgres_conn_str = get_env("TF_VAR_tf_state_postgres_conn_str")
 }
 
 remote_state {

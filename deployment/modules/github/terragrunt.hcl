@@ -17,8 +17,8 @@ dependencies {
 }
 
 locals {
-  env = get_env("ENVIRONMENT")
-  stage = get_env("STAGE", "")
+  env = get_env("TF_VAR_env")
+  stage = get_env("TF_VAR_stage", "")
 }
 
 inputs = {
@@ -30,7 +30,7 @@ remote_state {
   backend = "pg"
 
   config = {
-    conn_str = get_env("TF_STATE_POSTGRES_CONN_STR")
+    conn_str = get_env("TF_VAR_tf_state_postgres_conn_str")
     schema_name = "data_immich_app_github_org_${local.env}${local.stage}"
   }
 }
