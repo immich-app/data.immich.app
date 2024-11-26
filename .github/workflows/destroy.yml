@@ -36,6 +36,7 @@ jobs:
       - name: Destroy All
         working-directory: ${{ env.working_dir }}
         env:
+          ENVIRONMENT: ${{ matrix.environment }}
           TF_VAR_dist_dir: ${{ github.workspace }}/dist
           TF_VAR_stage: pr-${{ github.event.number }}
           OP_SERVICE_ACCOUNT_TOKEN: ${{ matrix.environment == 'prod' && secrets.OP_TF_PROD_ENV || secrets.OP_TF_DEV_ENV }}
