@@ -117,7 +117,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ fromJson(steps.deploy-frontend-output.outputs.output).pages_project_name.value }}
           directory: 'dist/frontend'
-          branch: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref_name }}
+          branch: ${{ fromJson(steps.deploy-frontend-output.outputs.output).pages_branch.value }}
           wranglerVersion: '3'
 
       - name: Comment
@@ -127,7 +127,7 @@ jobs:
           number: ${{ github.event.number }}
           body: |
             🚀 Preview deployed to:
-            - Frontend URL: https://${{ fromJson(steps.deploy-frontend-output.outputs.output).immich_app_branch_subdomain.value }}
+            - Frontend URL: https://${{ fromJson(steps.deploy-frontend-output.outputs.output).immich_subdomain.value }}
             - Backend URL: ${{ fromJson(steps.deploy-backend-output.outputs.output).data_api_url.value }}
           emojis: 'rocket'
           body-include: '<!-- web PR URL -->'

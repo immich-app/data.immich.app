@@ -5,4 +5,3 @@ variable "env" {}
 variable "stage" {
   default = ""
 }
-variable "pages_branch" {}
