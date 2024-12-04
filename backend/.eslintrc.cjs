@@ -11,6 +11,9 @@ module.exports = {
     curly: 2,
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-explicit-any': 'off',
+    "no-restricted-imports": ["error", {
+      "patterns": [".*"]
+    }],
   },
   root: true,
 };

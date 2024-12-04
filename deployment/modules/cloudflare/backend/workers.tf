@@ -112,6 +112,21 @@ resource "cloudflare_workers_script" "data_ingest_processor" {
     text = local.monitoring_token
   }
 
+  secret_text_binding {
+    name = "GITHUB_APP_ID"
+    text = var.github_app_read_only_id
+  }
+
+  secret_text_binding {
+    name = "GITHUB_APP_INSTALLATION_ID"
+    text = var.github_app_read_only_installation_id
+  }
+
+  secret_text_binding {
+    name = "GITHUB_APP_PEM"
+    text = var.github_app_read_only_pem_file_pkcs8
+  }
+
   compatibility_date  = "2024-07-29"
   compatibility_flags = ["nodejs_compat"]
 }

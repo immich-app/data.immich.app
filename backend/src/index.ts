@@ -3,6 +3,7 @@ import { QueueItem } from 'src/interfaces/queue.interface';
 import { CloudflareDeferredRepository } from 'src/repositories/cloudflare-deterred.repository';
 import { CloudflareMetricsRepository } from 'src/repositories/cloudflare-metrics.repository';
 import { CloudflareQueueRepository } from 'src/repositories/cloudflare-queue.repository';
+import { GithubRepository } from 'src/repositories/github.repository';
 import { InfluxMetricsProvider } from 'src/repositories/influx-metrics-provider.repository';
 import { ApiWorker } from 'src/workers/api.worker';
 import { IngestApiWorker } from 'src/workers/ingest-api.worker';
@@ -55,8 +56,13 @@ export default {
   queue: async (batch, env) => {
     const influxProvider = new InfluxMetricsProvider(env.VMETRICS_API_URL, env.VMETRICS_API_TOKEN);
     const metricsRepository = new CloudflareMetricsRepository('data', {}, [influxProvider]);
+    const githubRepository = new GithubRepository(
+      env.GITHUB_APP_ID,
+      env.GITHUB_APP_PEM,
+      env.GITHUB_APP_INSTALLATION_ID,
+    );
     const envTag = [env.ENVIRONMENT, env.STAGE].filter(Boolean).join('_');
-    const ingestProcessWorker = new IngestProcessorWorker(metricsRepository, envTag);
+    const ingestProcessWorker = new IngestProcessorWorker(metricsRepository, githubRepository, envTag);
 
     if (batch.queue.startsWith('data-ingest')) {
       await ingestProcessWorker.handleMessages(batch);
