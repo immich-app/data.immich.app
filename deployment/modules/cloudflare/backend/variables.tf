@@ -6,3 +6,7 @@ variable "env" {}
 variable "stage" {
   default = ""
 }
+
+variable "github_app_read_only_id" {}
+variable "github_app_read_only_installation_id" {}
+variable "github_app_read_only_pem_file_pkcs8" {}
