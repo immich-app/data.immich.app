@@ -85,7 +85,7 @@ export class GithubRepository implements IGithubRepository {
       };
     }>(
       `
-        query ($org: String!, $repo: String!, $states: [IssueState!]!) {
+        query ($org: String!, $repo: String!) {
           repository(owner: $org, name: $repo) {
             total: issues {
               totalCount
@@ -121,7 +121,7 @@ export class GithubRepository implements IGithubRepository {
       };
     }>(
       `
-        query ($org: String!, $repo: String!, $states: [DiscussionState!]!) {
+        query ($org: String!, $repo: String!) {
           repository(owner: $org, name: $repo) {
             total: discussions {
               totalCount
