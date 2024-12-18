@@ -52,7 +52,7 @@ export class IngestProcessorWorker {
     const prMetric = async (count: number) => {
       const prCount = await this.githubRepository.getPullRequestsCounts(githubRepo);
 
-      metrics.issue
+      metrics.pullRequest
         .withRepository(githubRepo)
         .withUser(data.sender)
         .intField('total', prCount.total)
