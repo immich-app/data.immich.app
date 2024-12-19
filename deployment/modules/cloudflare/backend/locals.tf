@@ -8,5 +8,5 @@ locals {
   domain_prefix = "${local.domain_stage}${local.domain_env}"
   domain        = "data.${local.domain_prefix}immich.app"
 
-  monitoring_url = var.env == "prod" ? "https://cf-workers.monitoring.immich.cloud" : "https://cf-workers.dev.monitoring.immich.cloud"
+  monitoring_url = var.env == "prod" ? "https://cf-workers.monitoring.immich.cloud" : "https://cf-workers.monitoring.immich.cloud"
 }
