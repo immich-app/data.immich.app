@@ -5,6 +5,7 @@
   import GithubPullRequestGraph from '$lib/components/graphs/github-pull-request-graph.svelte';
   import GithubStarsGraph from '$lib/components/graphs/github-stars-graph.svelte';
   import Icon from '$lib/components/icon.svelte';
+  import { githubData } from '$lib/services/api.svelte';
   import { mdiBug, mdiGithub, mdiMessageOutline, mdiSourceBranch, mdiStarOutline } from '@mdi/js';
 </script>
 
@@ -28,28 +29,28 @@
             <Icon path={mdiStarOutline} size="24" />
             <span>Stars</span>
           </h3>
-          <GithubStarsGraph />
+          <GithubStarsGraph data={githubData.stars} />
         </div>
         <div>
           <h3 class="flex gap-1 text-lg">
             <Icon path={mdiBug} size="24" />
             <span>Open Issues</span>
           </h3>
-          <GithubIssueGraph />
+          <GithubIssueGraph data={githubData.issues} />
         </div>
         <div>
           <h3 class="flex gap-1 text-lg">
             <Icon path={mdiSourceBranch} size="24" />
             <span>Open Pull Requests</span>
           </h3>
-          <GithubPullRequestGraph />
+          <GithubPullRequestGraph data={githubData.pullRequests} />
         </div>
         <div>
           <h3 class="flex gap-1 text-lg">
             <Icon path={mdiMessageOutline} size="24" />
             <span>Total Discussions</span>
           </h3>
-          <GithubDiscussionGraph />
+          <GithubDiscussionGraph data={githubData.discussions} />
         </div>
       </div>
     </section>

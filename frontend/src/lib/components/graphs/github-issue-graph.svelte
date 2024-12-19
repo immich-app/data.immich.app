@@ -1,14 +1,18 @@
 <script lang="ts">
   import '$lib/app.css';
-  import issueData from '$lib/assets/data/issue-data.json';
-  import { VisAxis, VisCrosshair, VisArea, VisTooltip, VisXYContainer } from '@unovis/svelte';
+  import { VisArea, VisAxis, VisCrosshair, VisTooltip, VisXYContainer } from '@unovis/svelte';
   import { DateTime } from 'luxon';
 
-  type DataRecord = [DateTime, number, number, number, number];
+  type DataRecord = [DateTime, number];
 
-  const data = issueData.map(([timestamp, ...rest]) => [DateTime.fromSeconds(timestamp), ...rest]);
+  type Props = {
+    data: DataRecord[];
+  };
+
+  const { data }: Props = $props();
+
   const x = ([timestamp]: DataRecord) => timestamp.toMillis();
-  const y = ([, , , total]: DataRecord) => total;
+  const y = ([, value]: DataRecord) => value;
   const tickFormatX = (value: number) => DateTime.fromMillis(value).toFormat('MMM yy');
   const tickFormatY = (i: number) =>
     new Intl.NumberFormat(navigator.language, { maximumSignificantDigits: 3 }).format(i);
