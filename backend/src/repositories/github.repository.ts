@@ -115,7 +115,13 @@ export class GithubRepository implements IGithubRepository {
   async getDiscussionsCounts(repo: GithubRepo) {
     const { repository } = await this.graphqlWithAuth<{
       repository: {
-        discussions: {
+        total: {
+          totalCount: number;
+        };
+        open: {
+          totalCount: number;
+        };
+        closed: {
           totalCount: number;
         };
       };
@@ -142,9 +148,9 @@ export class GithubRepository implements IGithubRepository {
     );
 
     return {
-      total: repository.discussions.totalCount,
-      open: repository.discussions.totalCount,
-      closed: repository.discussions.totalCount,
+      total: repository.total.totalCount,
+      open: repository.open.totalCount,
+      closed: repository.closed.totalCount,
     };
   }
 
