@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   export type Type = 'button' | 'submit' | 'reset';
   export type Color =
     | 'primary'
@@ -18,19 +18,39 @@
 </script>
 
 <script lang="ts">
-  export let type: Type = 'button';
-  export let color: Color = 'primary';
-  export let size: Size = 'base';
-  export let rounded: Rounded = '3xl';
-  export let shadow: Shadow = 'md';
-  export let disabled = false;
-  export let fullwidth = false;
-  export let border = false;
-  export let title: string | undefined = '';
-  export let form: string | undefined = undefined;
+  import { createBubbler } from 'svelte/legacy';
 
-  let className = '';
-  export { className as class };
+  const bubble = createBubbler();
+
+  interface Props {
+    type?: Type;
+    color?: Color;
+    size?: Size;
+    rounded?: Rounded;
+    shadow?: Shadow;
+    disabled?: boolean;
+    fullwidth?: boolean;
+    border?: boolean;
+    title?: string | undefined;
+    form?: string | undefined;
+    class?: string;
+    children?: import('svelte').Snippet;
+  }
+
+  let {
+    type = 'button',
+    color = 'primary',
+    size = 'base',
+    rounded = '3xl',
+    shadow = 'md',
+    disabled = false,
+    fullwidth = false,
+    border = false,
+    title = '',
+    form = undefined,
+    class: className = '',
+    children,
+  }: Props = $props();
 
   const colorClasses: Record<Color, string> = {
     primary:
@@ -67,9 +87,9 @@
   {disabled}
   {title}
   {form}
-  on:click
-  on:focus
-  on:blur
+  onclick={bubble('click')}
+  onfocus={bubble('focus')}
+  onblur={bubble('blur')}
   class="{className} inline-flex items-center justify-center transition-colors disabled:cursor-not-allowed disabled:opacity-60 {colorClasses[
     color
   ]} {sizeClasses[size]}"
@@ -80,5 +100,5 @@
   class:w-full={fullwidth}
   class:border
 >
-  <slot />
+  {@render children?.()}
 </button>
