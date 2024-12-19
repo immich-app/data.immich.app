@@ -24,7 +24,7 @@ const newApiWorker = (request: FetchRequest, env: WorkerEnv, ctx: ExecutionConte
   const deferredRepository = new CloudflareDeferredRepository(ctx);
   const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_API_URL, env.VMETRICS_WRITE_TOKEN);
   deferredRepository.defer(() => influxProvider.flush());
-  const metrics = new QueryMetricsRepository(env.VMETRICS_API_URL, env.VMETRICS_READ_TOKEN, asEnvTag(env));
+  const metrics = new MetricsQueryRepository(env.VMETRICS_API_URL, env.VMETRICS_READ_TOKEN, 'prod');
 
   return new ApiWorker(metrics);
 };
