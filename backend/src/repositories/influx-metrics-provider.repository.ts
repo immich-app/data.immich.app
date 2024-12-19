@@ -1,8 +1,8 @@
 import { Point } from '@influxdata/influxdb-client';
-import { IMetricsProviderRepository } from 'src/interfaces/metrics-provider.interface';
+import { IMetricsPushProviderRepository } from 'src/interfaces/metrics-provider.interface';
 import { Metric } from 'src/interfaces/metrics.interface';
 
-export class InfluxMetricsProvider implements IMetricsProviderRepository {
+export class InfluxMetricsPushProvider implements IMetricsPushProviderRepository {
   private metrics: string[] = [];
   constructor(
     private influxApiUrl: string,

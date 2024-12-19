@@ -27,11 +27,16 @@ resource "cloudflare_workers_script" "data_api" {
   }
 
   secret_text_binding {
-    name = "VMETRICS_API_TOKEN"
-    text = local.monitoring_token
+    name = "VMETRICS_WRITE_TOKEN"
+    text = var.vmetrics_write_token
   }
 
-  compatibility_date  = "2024-07-29"
+  secret_text_binding {
+    name = "VMETRICS_READ_TOKEN"
+    text = var.vmetrics_read_token
+  }
+
+  compatibility_date  = "2024-12-05"
   compatibility_flags = ["nodejs_compat"]
 }
 
@@ -65,8 +70,8 @@ resource "cloudflare_workers_script" "data_ingest_api" {
   }
 
   secret_text_binding {
-    name = "VMETRICS_API_TOKEN"
-    text = local.monitoring_token
+    name = "VMETRICS_WRITE_TOKEN"
+    text = var.vmetrics_write_token
   }
 
   secret_text_binding {
@@ -108,8 +113,8 @@ resource "cloudflare_workers_script" "data_ingest_processor" {
   }
 
   secret_text_binding {
-    name = "VMETRICS_API_TOKEN"
-    text = local.monitoring_token
+    name = "VMETRICS_WRITE_TOKEN"
+    text = var.vmetrics_write_token
   }
 
   secret_text_binding {

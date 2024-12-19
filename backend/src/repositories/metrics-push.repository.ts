@@ -1,15 +1,15 @@
-import { IMetricsProviderRepository } from 'src/interfaces/metrics-provider.interface';
-import { IMetricsRepository, Metric } from 'src/interfaces/metrics.interface';
+import { IMetricsPushProviderRepository } from 'src/interfaces/metrics-provider.interface';
+import { IMetricsPushRepository, Metric } from 'src/interfaces/metrics.interface';
 import { monitorAsyncFunction } from 'src/monitor';
 import { AsyncFn, Operation, Options } from 'src/types';
 
-export class CloudflareMetricsRepository implements IMetricsRepository {
+export class MetricsPushRepository implements IMetricsPushRepository {
   private readonly defaultTags: { [key: string]: string };
 
   constructor(
     private operationPrefix: string,
     tags: Record<string, string>,
-    private metricsProviders: IMetricsProviderRepository[],
+    private metricsProviders: IMetricsPushProviderRepository[],
   ) {
     this.defaultTags = { ...tags };
   }
