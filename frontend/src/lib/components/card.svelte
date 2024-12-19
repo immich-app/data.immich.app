@@ -4,7 +4,12 @@
   import { mdiAlertCircleOutline, mdiCheckCircleOutline } from '@mdi/js';
   import { fade } from 'svelte/transition';
 
-  export let status: 'loading' | 'success' | 'error' | undefined = undefined;
+  interface Props {
+    status?: 'loading' | 'success' | 'error' | undefined;
+    children?: import('svelte').Snippet;
+  }
+
+  let { status = undefined, children }: Props = $props();
 </script>
 
 <div
@@ -24,5 +29,5 @@
     {/if}
   </div>
 
-  <slot />
+  {@render children?.()}
 </div>
