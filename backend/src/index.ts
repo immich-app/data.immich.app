@@ -1,10 +1,11 @@
 import { AutoRouter, error, IRequest } from 'itty-router';
 import { QueueItem } from 'src/interfaces/queue.interface';
 import { CloudflareDeferredRepository } from 'src/repositories/cloudflare-deterred.repository';
-import { CloudflareMetricsRepository } from 'src/repositories/cloudflare-metrics.repository';
 import { CloudflareQueueRepository } from 'src/repositories/cloudflare-queue.repository';
 import { GithubRepository } from 'src/repositories/github.repository';
-import { InfluxMetricsProvider } from 'src/repositories/influx-metrics-provider.repository';
+import { InfluxMetricsPushProvider } from 'src/repositories/influx-metrics-provider.repository';
+import { MetricsPushRepository } from 'src/repositories/metrics-push.repository';
+import { MetricsQueryRepository } from 'src/repositories/metrics-query.repository';
 import { ApiWorker } from 'src/workers/api.worker';
 import { IngestApiWorker } from 'src/workers/ingest-api.worker';
 import { IngestProcessorWorker } from 'src/workers/ingest-processor.worker';
@@ -17,11 +18,13 @@ const asTags = (request: FetchRequest) => ({
   asOrg: request.cf?.asOrganization ?? '',
 });
 
+const asEnvTag = (env: WorkerEnv) => [env.ENVIRONMENT, env.STAGE].filter(Boolean).join('_');
+
 const newApiWorker = (request: FetchRequest, env: WorkerEnv, ctx: ExecutionContext) => {
   const deferredRepository = new CloudflareDeferredRepository(ctx);
-  const influxProvider = new InfluxMetricsProvider(env.VMETRICS_API_URL, env.VMETRICS_API_TOKEN);
+  const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_API_URL, env.VMETRICS_WRITE_TOKEN);
   deferredRepository.defer(() => influxProvider.flush());
-  const metrics = new CloudflareMetricsRepository('data', asTags(request), [influxProvider]);
+  const metrics = new QueryMetricsRepository(env.VMETRICS_API_URL, env.VMETRICS_READ_TOKEN, asEnvTag(env));
 
   return new ApiWorker(metrics);
 };
@@ -43,7 +46,7 @@ const handleError = (err: Error) => {
 };
 
 const router = AutoRouter<FetchRequest, [WorkerEnv, ExecutionContext]>()
-  .get('/api', (...args) => newApiWorker(...args).getGithubReports())
+  .get('/api/github', (...args) => newApiWorker(...args).getGithubReports())
   .post('/ingest/github/:slug', withSlug, async (req, env) =>
     newIngestApiWorker(req, env)
       .onGithubEvent(await req.json())
@@ -54,15 +57,14 @@ const router = AutoRouter<FetchRequest, [WorkerEnv, ExecutionContext]>()
 export default {
   fetch: router.fetch,
   queue: async (batch, env) => {
-    const influxProvider = new InfluxMetricsProvider(env.VMETRICS_API_URL, env.VMETRICS_API_TOKEN);
-    const metricsRepository = new CloudflareMetricsRepository('data', {}, [influxProvider]);
+    const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_API_URL, env.VMETRICS_WRITE_TOKEN);
+    const metricsRepository = new MetricsPushRepository('data', {}, [influxProvider]);
     const githubRepository = new GithubRepository(
       env.GITHUB_APP_ID,
       env.GITHUB_APP_PEM,
       env.GITHUB_APP_INSTALLATION_ID,
     );
-    const envTag = [env.ENVIRONMENT, env.STAGE].filter(Boolean).join('_');
-    const ingestProcessWorker = new IngestProcessorWorker(metricsRepository, githubRepository, envTag);
+    const ingestProcessWorker = new IngestProcessorWorker(metricsRepository, githubRepository, asEnvTag(env));
 
     if (batch.queue.startsWith('data-ingest')) {
       await ingestProcessWorker.handleMessages(batch);

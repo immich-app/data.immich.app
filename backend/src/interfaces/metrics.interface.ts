@@ -1,6 +1,6 @@
 import { AsyncFn, Operation, Options } from 'src/types';
 
-export interface IMetricsRepository {
+export interface IMetricsPushRepository {
   monitorAsyncFunction<T extends AsyncFn>(
     operation: Operation,
     call: T,

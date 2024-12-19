@@ -1,7 +1,7 @@
 import { User } from '@octokit/webhooks-types';
 import { GithubRepo } from 'src/constants';
 import { IGithubRepository } from 'src/interfaces/github.interface';
-import { IMetricsRepository, Metric } from 'src/interfaces/metrics.interface';
+import { IMetricsPushRepository, Metric } from 'src/interfaces/metrics.interface';
 import { QueueItem } from 'src/interfaces/queue.interface';
 
 class GithubMetric extends Metric {
@@ -16,7 +16,7 @@ class GithubMetric extends Metric {
 
 export class IngestProcessorWorker {
   constructor(
-    private metricsRepository: IMetricsRepository,
+    private metricsRepository: IMetricsPushRepository,
     private githubRepository: IGithubRepository,
     private envTag: string,
   ) {}
