@@ -10,21 +10,19 @@ export class ApiWorker {
       stars: { metricName: 'immich_data_repository_star_total' },
       discussions: { metricName: 'immich_data_repository_discussion_total' },
     };
-
     const start = new Date().getTime() - 365 * 24 * 60 * 60 * 1000; // 1 year ago
     const end = new Date().getTime();
 
     const promises = Object.entries(metrics).map(async ([key, value]) => {
-      const response = await this.metricsRepository.queryMaxOverTime({
+      const results = await this.metricsRepository.queryMaxOverTime({
         metricName: value.metricName,
         start,
         end,
         step: '1d',
       });
-      return [key, response[0] ?? []];
+      return [key, results[0]?.values ?? []];
     });
 
-    const promResponses = Object.fromEntries(await Promise.all(promises));
-    return promResponses;
+    return Object.fromEntries(await Promise.all(promises));
   }
 }
