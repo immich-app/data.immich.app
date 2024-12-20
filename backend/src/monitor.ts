@@ -11,7 +11,7 @@ export function monitorAsyncFunction<T extends AsyncFn>(
   const { name: operationName, tags = {} } = operation;
   const { monitorInvocations = true, acceptedErrors = [] } = options;
 
-  const metric = Metric.create(`${operationPrefix}_${operationName}`);
+  const metric = Metric.create(operationName);
   metric.addTags(tags);
   return async (...args: Parameters<T>) => {
     if (monitorInvocations) {

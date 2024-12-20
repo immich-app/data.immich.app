@@ -1,7 +1,10 @@
+import { createAppAuth } from '@octokit/auth-app';
 import { graphql } from '@octokit/graphql';
 import { DateTime } from 'luxon';
-
-const GITHUB_PAT = '';
+import { InfluxMetricsPushProvider } from 'src/repositories/influx-metrics-provider.repository';
+import { MetricsPushRepository } from 'src/repositories/metrics-push.repository';
+import { Metric } from '../interfaces/metrics.interface';
+import { GithubMetric } from '../workers/ingest-processor.worker';
 
 type PageInfo = { endCursor: string; hasNextPage: boolean };
 type Paginated<T> = T & { pageInfo: PageInfo };
@@ -30,6 +33,49 @@ const compare = (a: DateTime, b: DateTime) => {
   }
 
   return a < b ? -1 : 1;
+};
+
+if (!process.env.GITHUB_APP_ID || !process.env.GITHUB_PEM_FILE || !process.env.GITHUB_INSTALLATION_ID) {
+  throw new Error('Missing GitHub App credentials');
+}
+
+if (!process.env.VMETRICS_WRITE_TOKEN || !process.env.VMETRICS_API_URL || !process.env.VMETRICS_ADMIN_TOKEN) {
+  throw new Error('Missing VMetrics API credentials');
+}
+
+if (!process.env.ENVIRONMENT) {
+  throw new Error('Missing environment');
+}
+
+const influxProvider = new InfluxMetricsPushProvider(process.env.VMETRICS_API_URL, process.env.VMETRICS_WRITE_TOKEN);
+const metricsRepository = new MetricsPushRepository('', {}, [influxProvider]);
+
+const auth = createAppAuth({
+  appId: process.env.GITHUB_APP_ID,
+  privateKey: process.env.GITHUB_PEM_FILE,
+  installationId: process.env.GITHUB_INSTALLATION_ID,
+});
+
+const graphqlWithAuth = graphql.defaults({
+  request: {
+    hook: auth.hook,
+  },
+});
+
+const deleteTimeSeries = async (name: string, environment: string) => {
+  const url = new URL(`${process.env.VMETRICS_API_URL}/api/v1/admin/tsdb/delete_series`);
+  const match = `match[]=${name}{environment='${environment}'}`;
+  url.search = new URLSearchParams({ ['match[]']: match }).toString();
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${process.env.VMETRICS_ADMIN_TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  if (response.status != 204) {
+    throw new Error(`Failed to delete time series ${name}`);
+  }
 };
 
 export class BackfillService {
@@ -64,42 +110,45 @@ export class BackfillService {
   async backfillIssues() {
     const issues = await this.getIssues(immichOrg, immichRepo);
     console.log(`Loaded ${issues.length} issues`);
-    const days: Record<string, { timestamp: number; closed: number; open: number }> = {};
 
-    const increment = (date: DateTime, type: 'open' | 'closed') => {
-      const key = date.toFormat('yyyy-LL-dd');
-      if (!days[key]) {
-        days[key] = {
-          timestamp: date.startOf('day').toUnixInteger(),
-          open: 0,
-          closed: 0,
-        };
-      }
+    const events: { timestamp: number; type: string; data: GithubIssue }[] = [];
 
-      days[key][type]++;
-    };
+    for (const issue of issues) {
+      const { createdAt, closedAt } = issue;
+      const created = DateTime.fromISO(createdAt).toMillis();
+      const closed = closedAt ? DateTime.fromISO(closedAt).toMillis() : undefined;
 
-    for (const { createdAt, closedAt } of issues) {
-      increment(DateTime.fromISO(createdAt), 'open');
-      if (closedAt) {
-        increment(DateTime.fromISO(closedAt), 'closed');
+      events.push({ timestamp: created, type: 'open', data: issue });
+      if (closed) {
+        events.push({ timestamp: closed, type: 'closed', data: issue });
       }
     }
 
-    let open = 0;
+    events.sort((a, b) => a.timestamp - b.timestamp);
+
+    console.log(events);
+
+    let opened = 0;
     let closed = 0;
 
-    return [
-      ...Object.keys(days)
-        .sort()
-        .map((key) => {
-          const { timestamp, open: dailyOpen, closed: dailyClosed } = days[key];
-          open += dailyOpen;
-          closed += dailyClosed;
+    for (const { timestamp, type } of events) {
+      const metric = new GithubMetric('issue');
+      if (type === 'open') {
+        opened++;
+      } else {
+        closed++;
+      }
 
-          return [timestamp, open - closed];
-        }),
-    ];
+      metric
+        .withRepository(githubRepo)
+        .withUser(data.sender)
+        .intField('total', opened)
+        .intField('open_total', opened - closed)
+        .intField('closed_total', closed)
+        .intField('count', type === 'open' ? 1 : -1);
+    }
+
+    return [];
   }
 
   async backfillPullRequests() {
@@ -150,7 +199,7 @@ export class BackfillService {
     console.log(`Fetching stargazers for ${org}/${repo}`);
 
     do {
-      const { repository } = await graphql<{
+      const { repository } = await graphqlWithAuth<{
         repository: {
           stargazers: Paginated<{ edges: GithubStarGazer[] }>;
         };
@@ -175,9 +224,6 @@ export class BackfillService {
           repo,
           take: 100,
           cursor,
-          headers: {
-            authorization: `token ${GITHUB_PAT}`,
-          },
         },
       );
 
@@ -200,7 +246,7 @@ export class BackfillService {
     console.log(`Fetching issues for ${org}/${repo}`);
 
     do {
-      const { repository } = await graphql<{ repository: { issues: Paginated<{ nodes: GithubIssue[] }> } }>(
+      const { repository } = await graphqlWithAuth<{ repository: { issues: Paginated<{ nodes: GithubIssue[] }> } }>(
         `
           query ($org: String!, $repo: String!, $take: Int!, $cursor: String) {
             repository(owner: $org, name: $repo) {
@@ -224,9 +270,6 @@ export class BackfillService {
           repo,
           take: 100,
           cursor,
-          headers: {
-            authorization: `token ${GITHUB_PAT}`,
-          },
         },
       );
 
@@ -249,7 +292,9 @@ export class BackfillService {
     console.log(`Fetching pull requests for ${org}/${repo}`);
 
     do {
-      const { repository } = await graphql<{ repository: { pullRequests: Paginated<{ nodes: GithubPullRequest[] }> } }>(
+      const { repository } = await graphqlWithAuth<{
+        repository: { pullRequests: Paginated<{ nodes: GithubPullRequest[] }> };
+      }>(
         `
           query ($org: String!, $repo: String!, $take: Int!, $cursor: String) {
             repository(owner: $org, name: $repo) {
@@ -275,9 +320,6 @@ export class BackfillService {
           repo,
           take: 100,
           cursor,
-          headers: {
-            authorization: `token ${GITHUB_PAT}`,
-          },
         },
       );
 
@@ -296,12 +338,12 @@ export class BackfillService {
 
 const main = async () => {
   const service = new BackfillService();
-  const [stars, pullRequests, issues] = await Promise.all([
-    service.backfillStars(),
-    service.backfillPullRequests(),
+  const [stars] = await Promise.all([
+    // service.backfillStars(),
+    // service.backfillPullRequests(),
     service.backfillIssues(),
   ]);
-  // console.log(JSON.stringify({ stars, pullRequests, issues }, null, 4));
+  console.log(stars);
 };
 
 main();
