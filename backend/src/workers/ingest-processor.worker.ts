@@ -1,11 +1,13 @@
-import { User } from '@octokit/webhooks-types';
-import { GithubRepo } from 'src/constants';
+import { GithubRepo, GithubUser } from 'src/constants';
 import { IGithubRepository } from 'src/interfaces/github.interface';
 import { IMetricsPushRepository, Metric } from 'src/interfaces/metrics.interface';
 import { QueueItem } from 'src/interfaces/queue.interface';
 
 export class GithubMetric extends Metric {
-  withUser(user: User) {
+  withUser(user?: GithubUser) {
+    if (!user) {
+      return this;
+    }
     return this.addTag('username', user.login).addTag('user_id', user.id.toString());
   }
 
@@ -71,6 +73,7 @@ export class IngestProcessorWorker {
         .intField('total', discussionCount.total)
         .intField('open_total', discussionCount.open)
         .intField('closed_total', discussionCount.closed)
+        .intField('answered_total', discussionCount.answered)
         .intField('count', count);
     };
 

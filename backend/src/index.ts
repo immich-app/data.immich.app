@@ -12,19 +12,13 @@ import { IngestProcessorWorker } from 'src/workers/ingest-processor.worker';
 
 type FetchRequest = IRequest & Parameters<ExportedHandlerFetchHandler>[0];
 
-const asTags = (request: FetchRequest) => ({
-  continent: request.cf?.continent ?? '',
-  colo: request.cf?.colo ?? '',
-  asOrg: request.cf?.asOrganization ?? '',
-});
-
 const asEnvTag = (env: WorkerEnv) => [env.ENVIRONMENT, env.STAGE].filter(Boolean).join('_');
 
 const newApiWorker = (request: FetchRequest, env: WorkerEnv, ctx: ExecutionContext) => {
   const deferredRepository = new CloudflareDeferredRepository(ctx);
-  const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_API_URL, env.VMETRICS_WRITE_TOKEN);
+  const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_DATA_API_URL, env.VMETRICS_DATA_WRITE_TOKEN);
   deferredRepository.defer(() => influxProvider.flush());
-  const metrics = new MetricsQueryRepository(env.VMETRICS_API_URL, env.VMETRICS_READ_TOKEN, 'prod');
+  const metrics = new MetricsQueryRepository(env.VMETRICS_DATA_API_URL, env.VMETRICS_DATA_READ_TOKEN, 'prod');
 
   return new ApiWorker(metrics);
 };
@@ -57,8 +51,8 @@ const router = AutoRouter<FetchRequest, [WorkerEnv, ExecutionContext]>()
 export default {
   fetch: router.fetch,
   queue: async (batch, env) => {
-    const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_API_URL, env.VMETRICS_WRITE_TOKEN);
-    const metricsRepository = new MetricsPushRepository('data', {}, [influxProvider]);
+    const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_DATA_API_URL, env.VMETRICS_DATA_WRITE_TOKEN);
+    const metricsRepository = new MetricsPushRepository('immich_data_repository', {}, [influxProvider]);
     const githubRepository = new GithubRepository(
       env.GITHUB_APP_ID,
       env.GITHUB_APP_PEM,

@@ -11,6 +11,7 @@ export class InfluxMetricsPushProvider implements IMetricsPushProviderRepository
 
   pushMetric(metric: Metric) {
     const point = new Point(metric.fullName);
+    point.timestamp(metric.timestamp);
     for (const [key, value] of metric.tags) {
       point.tag(key, value);
     }
@@ -27,19 +28,27 @@ export class InfluxMetricsPushProvider implements IMetricsPushProviderRepository
     }
   }
 
-  async flush() {
+  flush(): Promise<void> {
     if (this.metrics.length === 0) {
-      return;
+      return Promise.resolve();
     }
     const metrics = this.metrics.join('\n');
-    const response = await fetch(`${this.influxApiUrl}/write`, {
-      method: 'POST',
-      body: this.metrics.join('\n'),
-      headers: {
-        Authorization: `Token ${this.influxApiToken}`,
-      },
-    });
-    await response.body?.cancel();
-    console.log(metrics);
+    this.metrics = [];
+    const send = async () => {
+      const response = await fetch(`${this.influxApiUrl}/write`, {
+        method: 'POST',
+        body: metrics,
+        headers: {
+          Authorization: `Token ${this.influxApiToken}`,
+          'Stream-Mode': '1',
+        },
+      });
+      await response.body?.cancel();
+      if (response.status !== 204) {
+        throw new Error(`InfluxDB write failed with status ${response.status}`);
+      }
+    };
+
+    return send();
   }
 }
