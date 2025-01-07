@@ -10,7 +10,7 @@ export class InfluxMetricsPushProvider implements IMetricsPushProviderRepository
   ) {}
 
   pushMetric(metric: Metric) {
-    const point = new Point(metric.name);
+    const point = new Point(metric.fullName);
     for (const [key, value] of metric.tags) {
       point.tag(key, value);
     }

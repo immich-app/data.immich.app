@@ -13,6 +13,7 @@ export class Metric {
   private _tags: Map<string, string> = new Map();
   private _timestamp = performance.now();
   private _fields = new Map<string, { value: any; type: 'duration' | 'int' }>();
+  private _prefix?: string;
 
   constructor(private _name: string) {}
 
@@ -34,6 +35,19 @@ export class Metric {
 
   get name() {
     return this._name;
+  }
+
+  get prefix() {
+    return this._prefix;
+  }
+
+  get fullName() {
+    return this._prefix ? `${this._prefix}_${this._name}` : this._name;
+  }
+
+  setPrefix(prefix: string) {
+    this._prefix = prefix;
+    return this;
   }
 
   addTag(key: string, value: string) {
