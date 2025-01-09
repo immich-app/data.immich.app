@@ -1,6 +1,6 @@
 <script lang="ts">
   import '$lib/app.css';
-  import { VisArea, VisAxis, VisCrosshair, VisTooltip, VisXYContainer } from '@unovis/svelte';
+  import { VisAxis, VisCrosshair, VisLine, VisTooltip, VisXYContainer } from '@unovis/svelte';
   import { DateTime } from 'luxon';
 
   type DataRecord = [DateTime, number];
@@ -21,10 +21,10 @@
 </script>
 
 <VisXYContainer {data} height={250} class="area-graph">
-  <VisArea {x} {y} color="royalblue" />
+  <VisLine {x} {y} color="royalblue" />
   <!-- <VisBulletLegend {items} {onLegendItemClick} bulletSize="15px" /> -->
   <VisTooltip />
   <VisCrosshair {x} {y} {template} />
-  <VisAxis tickFormat={tickFormatX} type="x" numTicks={6} gridLine={false} />
-  <VisAxis tickFormat={tickFormatY} type="y" numTicks={4} gridLine={true} />
+  <VisAxis tickFormat={tickFormatX} type="x" numTicks={6} gridLine />
+  <VisAxis tickFormat={tickFormatY} type="y" numTicks={4} gridLine />
 </VisXYContainer>

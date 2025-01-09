@@ -21,7 +21,7 @@
     <section class="flex flex-col gap-4">
       <h2 class="flex gap-1 text-xl">
         <Icon path={mdiGithub} size="24" />
-        <span>Repro Trends</span>
+        <span>Repo Trends</span>
       </h2>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div>
