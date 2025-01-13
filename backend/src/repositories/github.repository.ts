@@ -124,6 +124,9 @@ export class GithubRepository implements IGithubRepository {
         closed: {
           totalCount: number;
         };
+        answered: {
+          totalCount: number;
+        };
       };
     }>(
       `
@@ -136,6 +139,9 @@ export class GithubRepository implements IGithubRepository {
               totalCount
             }
             closed: discussions(states: [CLOSED]) {
+              totalCount
+            }
+            answered: discussions(answered: true) {
               totalCount
             }
           }
@@ -151,6 +157,7 @@ export class GithubRepository implements IGithubRepository {
       total: repository.total.totalCount,
       open: repository.open.totalCount,
       closed: repository.closed.totalCount,
+      answered: repository.answered.totalCount,
     };
   }
 

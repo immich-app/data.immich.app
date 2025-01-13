@@ -29,6 +29,7 @@ export type DiscussionsCountsResponse = {
   open: number;
   closed: number;
   total: number;
+  answered: number;
 };
 
 export interface IGithubRepository {

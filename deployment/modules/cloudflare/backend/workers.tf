@@ -22,16 +22,21 @@ resource "cloudflare_workers_script" "data_api" {
   }
 
   plain_text_binding {
-    name = "VMETRICS_API_URL"
-    text = local.monitoring_url
+    name = "VMETRICS_DATA_API_URL"
+    text = local.vmetrics_data_api_url
   }
 
   secret_text_binding {
-    name = "VMETRICS_API_TOKEN"
-    text = local.monitoring_token
+    name = "VMETRICS_DATA_WRITE_TOKEN"
+    text = var.vmetrics_data_write_token
   }
 
-  compatibility_date  = "2024-07-29"
+  secret_text_binding {
+    name = "VMETRICS_DATA_READ_TOKEN"
+    text = var.vmetrics_data_read_token
+  }
+
+  compatibility_date  = "2024-12-05"
   compatibility_flags = ["nodejs_compat"]
 }
 
@@ -60,13 +65,13 @@ resource "cloudflare_workers_script" "data_ingest_api" {
   }
 
   plain_text_binding {
-    name = "VMETRICS_API_URL"
-    text = local.monitoring_url
+    name = "VMETRICS_DATA_API_URL"
+    text = local.vmetrics_data_api_url
   }
 
   secret_text_binding {
-    name = "VMETRICS_API_TOKEN"
-    text = local.monitoring_token
+    name = "VMETRICS_DATA_WRITE_TOKEN"
+    text = var.vmetrics_data_write_token
   }
 
   secret_text_binding {
@@ -103,13 +108,13 @@ resource "cloudflare_workers_script" "data_ingest_processor" {
   }
 
   plain_text_binding {
-    name = "VMETRICS_API_URL"
-    text = local.monitoring_url
+    name = "VMETRICS_DATA_API_URL"
+    text = local.vmetrics_data_api_url
   }
 
   secret_text_binding {
-    name = "VMETRICS_API_TOKEN"
-    text = local.monitoring_token
+    name = "VMETRICS_DATA_WRITE_TOKEN"
+    text = var.vmetrics_data_write_token
   }
 
   secret_text_binding {

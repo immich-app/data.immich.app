@@ -1,15 +1,15 @@
-import { IMetricsProviderRepository } from 'src/interfaces/metrics-provider.interface';
-import { IMetricsRepository, Metric } from 'src/interfaces/metrics.interface';
+import { IMetricsPushProviderRepository } from 'src/interfaces/metrics-provider.interface';
+import { IMetricsPushRepository, Metric } from 'src/interfaces/metrics.interface';
 import { monitorAsyncFunction } from 'src/monitor';
 import { AsyncFn, Operation, Options } from 'src/types';
 
-export class CloudflareMetricsRepository implements IMetricsRepository {
+export class MetricsPushRepository implements IMetricsPushRepository {
   private readonly defaultTags: { [key: string]: string };
 
   constructor(
-    private operationPrefix: string,
+    private metricPrefix: string,
     tags: Record<string, string>,
-    private metricsProviders: IMetricsProviderRepository[],
+    private metricsProviders: IMetricsPushProviderRepository[],
   ) {
     this.defaultTags = { ...tags };
   }
@@ -26,10 +26,11 @@ export class CloudflareMetricsRepository implements IMetricsRepository {
       }
     };
 
-    return monitorAsyncFunction(this.operationPrefix, operation, call, callback, options);
+    return monitorAsyncFunction(this.metricPrefix, operation, call, callback, options);
   }
 
   push(metric: Metric) {
+    metric.setPrefix(this.metricPrefix);
     metric.addTags(this.defaultTags);
     for (const provider of this.metricsProviders) {
       provider.pushMetric(metric);

@@ -1,12 +1,16 @@
 <script lang="ts">
   import '$lib/app.css';
-  import starData from '$lib/assets/data/star-data.json';
-  import { VisAxis, VisCrosshair, VisArea, VisTooltip, VisXYContainer } from '@unovis/svelte';
+  import { VisAxis, VisCrosshair, VisLine, VisTooltip, VisXYContainer } from '@unovis/svelte';
   import { DateTime } from 'luxon';
 
   type DataRecord = [DateTime, number];
 
-  const data = starData.map(([timestamp, value]) => [DateTime.fromSeconds(timestamp), value]);
+  type Props = {
+    data: DataRecord[];
+  };
+
+  const { data }: Props = $props();
+
   const x = ([timestamp]: DataRecord) => timestamp.toMillis();
   const y = ([, value]: DataRecord) => value;
   const tickFormatX = (value: number) => DateTime.fromMillis(value).toFormat('MMM yy');
@@ -17,9 +21,9 @@
 </script>
 
 <VisXYContainer {data} height={250} class="area-graph">
-  <VisArea {x} {y} color="#ffc501" />
+  <VisLine {x} {y} color="#ffc501" />
   <VisTooltip />
   <VisCrosshair {x} {y} {template} />
-  <VisAxis tickFormat={tickFormatX} type="x" numTicks={6} gridLine={false} />
-  <VisAxis tickFormat={tickFormatY} type="y" numTicks={4} gridLine={true} />
+  <VisAxis tickFormat={tickFormatX} type="x" numTicks={6} gridLine />
+  <VisAxis tickFormat={tickFormatY} type="y" numTicks={4} gridLine />
 </VisXYContainer>

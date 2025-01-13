@@ -1,11 +1,13 @@
-import { User } from '@octokit/webhooks-types';
-import { GithubRepo } from 'src/constants';
+import { GithubRepo, GithubUser } from 'src/constants';
 import { IGithubRepository } from 'src/interfaces/github.interface';
-import { IMetricsRepository, Metric } from 'src/interfaces/metrics.interface';
+import { IMetricsPushRepository, Metric } from 'src/interfaces/metrics.interface';
 import { QueueItem } from 'src/interfaces/queue.interface';
 
-class GithubMetric extends Metric {
-  withUser(user: User) {
+export class GithubMetric extends Metric {
+  withUser(user?: GithubUser) {
+    if (!user) {
+      return this;
+    }
     return this.addTag('username', user.login).addTag('user_id', user.id.toString());
   }
 
@@ -16,7 +18,7 @@ class GithubMetric extends Metric {
 
 export class IngestProcessorWorker {
   constructor(
-    private metricsRepository: IMetricsRepository,
+    private metricsRepository: IMetricsPushRepository,
     private githubRepository: IGithubRepository,
     private envTag: string,
   ) {}
@@ -28,10 +30,10 @@ export class IngestProcessorWorker {
 
   private async handleMessage(message: Message<QueueItem>) {
     const metrics = {
-      star: new GithubMetric('immich_data_repository_star'),
-      issue: new GithubMetric('immich_data_repository_issue'),
-      pullRequest: new GithubMetric('immich_data_repository_pull_request'),
-      discussion: new GithubMetric('immich_data_repository_discussion'),
+      star: new GithubMetric('star'),
+      issue: new GithubMetric('issue'),
+      pullRequest: new GithubMetric('pull_request'),
+      discussion: new GithubMetric('discussion'),
     };
 
     const { type, data } = message.body;
@@ -71,6 +73,7 @@ export class IngestProcessorWorker {
         .intField('total', discussionCount.total)
         .intField('open_total', discussionCount.open)
         .intField('closed_total', discussionCount.closed)
+        .intField('answered_total', discussionCount.answered)
         .intField('count', count);
     };
 
