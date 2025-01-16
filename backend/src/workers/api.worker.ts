@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { IMMICH_INCEPTION } from 'src/constants';
 import { IMetricsQueryRepository } from 'src/interfaces/query-metrics.interface';
 
 export class ApiWorker {
@@ -15,7 +16,7 @@ export class ApiWorker {
     const promises = Object.entries(metrics).map(async ([key, value]) => {
       const results = await this.metricsRepository.queryMaxOverTime({
         metricName: value.metricName,
-        start: DateTime.now().minus({ years: 1 }).toMillis(),
+        start: IMMICH_INCEPTION.toMillis(),
         end: DateTime.now().toMillis(),
         step: '1d',
       });
