@@ -41,8 +41,8 @@
   "type": "module",
   "dependencies": {
     "@mdi/js": "^7.4.47",
-    "@unovis/svelte": "1.5.0",
-    "@unovis/ts": "1.5.0",
+    "@unovis/svelte": "1.5.0-beta.3",
+    "@unovis/ts": "1.5.0-beta.3",
     "luxon": "^3.5.0"
   }
 }
