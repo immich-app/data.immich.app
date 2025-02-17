@@ -1,29 +1,77 @@
 <script lang="ts">
   import '$lib/app.css';
-  import { VisAxis, VisCrosshair, VisLine, VisTooltip, VisXYContainer } from '@unovis/svelte';
+
   import { DateTime } from 'luxon';
+  import { onMount } from 'svelte';
+  import uPlot from 'uplot';
 
   type DataRecord = [DateTime, number];
 
   type Props = {
     data: DataRecord[];
+    cursorOpts: uPlot.Cursor;
   };
 
-  const { data }: Props = $props();
+  const { data, cursorOpts }: Props = $props();
 
-  const x = ([timestamp]: DataRecord) => timestamp.toMillis();
-  const y = ([, value]: DataRecord) => value;
-  const tickFormatX = (value: number) => DateTime.fromMillis(value).toFormat('MMM yy');
-  const tickFormatY = (i: number) =>
-    new Intl.NumberFormat(navigator.language, { maximumSignificantDigits: 3 }).format(i);
-  const template = ([timestamp, value]: DataRecord) =>
-    `${timestamp.toLocaleString()} - ${value.toLocaleString()} stars`;
+  let chartElement: HTMLDivElement | undefined = $state();
+  let chartWidth: number = $state(0);
+  let chartHeight: number = $state(0);
+
+  onMount(() => {
+    if (!chartElement) return;
+    // floats
+    const xAxis: number[] = [];
+    const yAxis: number[] = [];
+    data.forEach((d) => {
+      xAxis.push(d[0].toMillis() / 1000);
+      yAxis.push(d[1]);
+    });
+
+    const formatData = [xAxis, yAxis];
+
+    const opts: uPlot.Options = {
+      padding: [16, 16, 16, 16],
+      cursor: cursorOpts,
+      width: 500,
+      height: 500,
+      scales: {},
+      legend: {
+        show: true,
+      },
+      axes: [
+        {
+          show: true,
+          scale: 'x',
+          values: (self, splits) => splits.map((split) => DateTime.fromMillis(split * 1000).toFormat('MMM yy')),
+        },
+        {
+          show: true,
+          scale: 'y',
+          values: (self, splits) => splits.map((split) => split.toLocaleString()),
+        },
+      ],
+      series: [
+        {},
+        {
+          show: true,
+          spanGaps: false,
+          stroke: 'red',
+          width: 1,
+          fill: 'rgba(255, 0, 0, 0.1)',
+        },
+      ],
+    };
+
+    const plot = new uPlot(opts, formatData, chartElement);
+    plot.setSize({ width: chartWidth, height: chartHeight });
+  });
 </script>
 
-<VisXYContainer {data} height={250} class="area-graph">
-  <VisLine {x} {y} color="#ffc501" />
-  <VisTooltip />
-  <VisCrosshair {x} {y} {template} />
-  <VisAxis tickFormat={tickFormatX} type="x" numTicks={6} gridLine />
-  <VisAxis tickFormat={tickFormatY} type="y" numTicks={4} gridLine />
-</VisXYContainer>
+<div
+  id="chart-id"
+  class="h-[250px] w-full mb-8"
+  bind:clientWidth={chartWidth}
+  bind:clientHeight={chartHeight}
+  bind:this={chartElement}
+></div>
