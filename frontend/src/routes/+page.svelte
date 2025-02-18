@@ -1,7 +1,7 @@
 <script lang="ts">
   import '$lib/app.css';
   import 'uplot/dist/uPlot.min.css';
-  import GithubStarsGraph from '$lib/components/graphs/github-stars-graph.svelte';
+  import GithubGraph from '$lib/components/graphs/github-graph.svelte';
   import Icon from '$lib/components/icon.svelte';
   import { githubData } from '$lib/services/api.svelte';
   import { mdiBug, mdiGithub, mdiMessageOutline, mdiSourceBranch, mdiStarOutline } from '@mdi/js';
@@ -39,21 +39,21 @@
             <Icon path={mdiStarOutline} size="24" />
             <span>Stars</span>
           </h3>
-          <GithubStarsGraph color="yellow" id="stars-chart" data={githubData.stars} {cursorOpts} label={'Stars'} />
+          <GithubGraph color="yellow" id="stars-chart" data={githubData.stars} {cursorOpts} label={'Stars'} />
         </div>
         <div>
           <h3 class="flex gap-1 text-lg">
             <Icon path={mdiBug} size="24" />
             <span>Open Issues</span>
           </h3>
-          <GithubStarsGraph color="blue" id="issues-chart" data={githubData.issues} {cursorOpts} label={'Issues'} />
+          <GithubGraph color="blue" id="issues-chart" data={githubData.issues} {cursorOpts} label={'Issues'} />
         </div>
         <div>
           <h3 class="flex gap-1 text-lg">
             <Icon path={mdiSourceBranch} size="24" />
             <span>Open Pull Requests</span>
           </h3>
-          <GithubStarsGraph
+          <GithubGraph
             color="green"
             id="pull-requests-chart"
             data={githubData.pullRequests}
@@ -66,7 +66,7 @@
             <Icon path={mdiMessageOutline} size="24" />
             <span>Total Discussions</span>
           </h3>
-          <GithubStarsGraph
+          <GithubGraph
             color="purple"
             id="discussions-chart"
             data={githubData.discussions}
