@@ -1,9 +1,10 @@
 <script lang="ts">
   import '$lib/app.css';
+  import { debounce } from '$lib/utils';
+  import { Theme, theme } from '@immich/ui';
   import { DateTime } from 'luxon';
-
   import { onMount } from 'svelte';
-  import uPlot from 'uplot';
+  import uPlot, { type Axis } from 'uplot';
 
   type DataRecord = [DateTime, number];
   type Colors = 'yellow' | 'green' | 'purple' | 'blue';
@@ -19,10 +20,21 @@
   const { id, data, cursorOpts, label, color }: Props = $props();
 
   let chartElement: HTMLDivElement | undefined = $state();
-  let tooltip: HTMLDivElement | undefined = $state();
+  let tooltipElement: HTMLDivElement | undefined = $state();
   let chartWidth: number = $state(0);
   let chartHeight: number = $state(0);
   let chartId = $state('');
+  let tooltipDate = $state('');
+  let tooltipValue = $state('');
+  let mousePosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const xAxis: number[] = [];
+  const yAxis: number[] = [];
+
+  for (const [date, value] of data) {
+    xAxis.push(date.toMillis() / 1000);
+    yAxis.push(value);
+  }
 
   let colors = {
     yellow: 'rgb(255, 197, 0)',
@@ -38,21 +50,40 @@
     blue: 'rgba(63, 106, 222, 0.1)',
   };
 
-  let tooltipDate = $state('');
-  let tooltipValue = $state('');
+  let plot: uPlot;
+
+  let isDark = $derived(theme.value === Theme.Dark);
+
+  const hideTooltipElement = () => {
+    tooltipDate = '';
+    tooltipValue = '';
+    if (tooltipElement) {
+      tooltipElement.style.display = 'none';
+    }
+  };
+
+  const showTooltipElement = () => {
+    if (tooltipElement) {
+      tooltipElement.style.display = 'block';
+    }
+  };
 
   onMount(() => {
-    if (!chartElement) return;
-
-    const xAxis: number[] = [];
-    const yAxis: number[] = [];
-
-    data.forEach((d) => {
-      xAxis.push(d[0].toMillis() / 1000);
-      yAxis.push(d[1]);
-    });
+    if (!chartElement) {
+      return;
+    }
 
     const formatData: uPlot.AlignedData = [new Float64Array(xAxis), new Float64Array(yAxis)];
+
+    const axis: Axis = {
+      stroke: () => (isDark ? '#ccc' : 'black'),
+      ticks: {
+        stroke: () => (isDark ? '#444' : '#ddd'),
+      },
+      grid: {
+        show: false,
+      },
+    };
 
     const opts: uPlot.Options = {
       id,
@@ -79,67 +110,81 @@
         },
       ],
 
+      axes: [axis, axis],
+
       hooks: {
         setCursor: [
           (u) => {
-            if (u.root.id != chartId || !tooltip) {
+            if (u.root.id != chartId || !tooltipElement) {
               return;
             }
 
-            const { left, top, idx } = u.cursor;
+            const { idx } = u.cursor;
+
             if (idx == null) {
+              hideTooltipElement();
               return;
             }
 
             const date = new Date(u.data[0][idx] * 1000).toLocaleDateString();
             const value = u.data[1][idx];
 
-            tooltip.style.left = `${left ? left - 25 : 0}px`;
-            tooltip.style.top = `${top ? top - 20 : 0}px`;
-            tooltip.style.display = 'block';
-
             tooltipDate = date;
-            tooltipValue = value?.toString() || '';
+            tooltipValue = value?.toLocaleString() || '';
+
+            showTooltipElement();
           },
         ],
-        setSeries: [
-          () => {
-            if (tooltip) {
-              tooltip.style.display = 'none';
-            }
-          },
-        ],
+        setSeries: [() => hideTooltipElement()],
       },
     };
 
-    const plot = new uPlot(opts, formatData, chartElement);
+    plot = new uPlot(opts, formatData, chartElement);
     plot.setSize({ width: chartWidth, height: chartHeight });
   });
+
+  $effect(() => {
+    if (plot && theme.value) {
+      plot.redraw(false);
+    }
+  });
+
+  const onResize = debounce(() => {
+    plot?.setSize({ width: chartWidth, height: chartHeight });
+  }, 150);
+
+  const onMouseMove = (event: MouseEvent) => {
+    mousePosition.x = event.clientX;
+    mousePosition.y = event.clientY;
+  };
 </script>
+
+<svelte:window onresize={onResize} onmousemove={onMouseMove} />
 
 <!-- svelte-ignore a11y_mouse_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
-  {id}
-  class="h-[275px] w-full mb-16 relative"
+  class="h-[275px] mb-10 w-full relative"
   bind:clientWidth={chartWidth}
   bind:clientHeight={chartHeight}
   bind:this={chartElement}
   onmouseover={() => {
+    showTooltipElement();
     chartId = id;
   }}
-  onmouseout={() => {
+  onmouseleave={() => {
+    hideTooltipElement();
     chartId = '';
   }}
+></div>
+<div
+  bind:this={tooltipElement}
+  style="top: {mousePosition.y - 32}px; left: {mousePosition.x - 112}px"
+  class="absolute border shadow-md text-xs w-[100px] rounded-lg bg-light py-2 px-3 text-center font-mono {chartId &&
+  tooltipValue
+    ? ''
+    : 'hidden'}"
 >
-  <div
-    bind:this={tooltip}
-    class="absolute bg-gray-100 shadow-md text-black text-xs rounded-lg p-2 px-3 hidden text-center font-mono"
-  >
-    <p>
-      {tooltipDate}
-    </p>
-
-    <p class="font-bold">{tooltipValue}</p>
-  </div>
+  <p>{tooltipDate}</p>
+  <p class="font-bold">{tooltipValue}</p>
 </div>
