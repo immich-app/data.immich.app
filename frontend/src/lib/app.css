@@ -65,13 +65,22 @@ body {
   }
 }
 
-.area-graph {
-  --vis-area-cursor: default;
-  --vis-area-fill-opacity: 1;
-  --vis-area-stroke-color: none;
-  --vis-area-stroke-width: 0px;
-  --vis-area-stroke-dasharray: none;
-  --vis-area-stroke-opacity: 1;
-  --vis-area-hover-fill-opacity: none;
-  --vis-area-hover-stroke-width: none;
+.u-legend {
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  background-color: rgba(203, 203, 203, 0.1);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.u-series {
+  text-align: center;
+}
+
+.u-legend,
+.u-inline,
+.u-live > table > tbody {
+  display: flex;
+  place-items: center;
+  place-content: center;
+  gap: 4px;
 }
