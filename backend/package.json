@@ -18,7 +18,7 @@
     "check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.6.0",
+    "@cloudflare/vitest-pool-workers": "^0.7.0",
     "@cloudflare/workers-types": "^4.20240729.0",
     "@octokit/types": "^13.6.2",
     "@octokit/webhooks-types": "^7.6.1",
