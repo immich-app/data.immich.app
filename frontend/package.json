@@ -40,7 +40,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@immich/ui": "^0.16.0",
+    "@immich/ui": "^0.17.0",
     "@mdi/js": "^7.4.47",
     "luxon": "^3.5.0",
     "uplot": "^1.6.31"
