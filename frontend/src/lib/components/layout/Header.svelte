@@ -2,7 +2,7 @@
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/state';
   import type { HeaderItem } from '$lib/types';
-  import { Button, CloseButton, HStack, IconButton, Logo, NavbarItem, syncToDom, ThemeSwitcher } from '@immich/ui';
+  import { Button, CloseButton, HStack, IconButton, Logo, NavbarItem, ThemeSwitcher } from '@immich/ui';
   import { mdiMenu, mdiOpenInNew } from '@mdi/js';
   import type { Snippet } from 'svelte';
 
@@ -15,10 +15,6 @@
     path === page.url.pathname || (options?.prefix && page.url.pathname.startsWith(path));
 
   let { items, children }: Props = $props();
-
-  $effect(() => {
-    syncToDom();
-  });
 
   let menuOpen = $state(false);
   afterNavigate(() => {

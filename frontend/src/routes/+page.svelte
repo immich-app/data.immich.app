@@ -20,7 +20,7 @@
 </script>
 
 <Container size="giant" center>
-  <Heading size="large" class="flex gap-1 items-center">
+  <Heading size="large" class="flex gap-1 items-center" tag="h1">
     <span>GitHub Trends</span>
   </Heading>
   <Text color="muted">immich-app/immich</Text>
