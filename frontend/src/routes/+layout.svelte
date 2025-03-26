@@ -3,7 +3,7 @@
   import Header from '$lib/components/layout/Header.svelte';
   import PageContent from '$lib/components/layout/PageContent.svelte';
   import { backendUrl } from '$lib/environment';
-  import { AppShell, AppShellHeader } from '@immich/ui';
+  import { AppShell, AppShellHeader, initializeTheme } from '@immich/ui';
   import type { Snippet } from 'svelte';
 
   type Props = {
@@ -11,6 +11,8 @@
   };
 
   let { children }: Props = $props();
+
+  initializeTheme();
 
   console.log(`Backend URL: ${backendUrl}`);
 </script>
