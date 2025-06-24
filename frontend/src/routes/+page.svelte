@@ -1,7 +1,7 @@
 <script lang="ts">
   import '$lib/app.css';
   import GithubGraph from '$lib/components/graphs/github-graph.svelte';
-  import { githubData } from '$lib/services/api.svelte';
+  import { githubData, loadGithubData } from '$lib/services/api.svelte';
   import { Card, CardBody, CardHeader, CardTitle, Container, Heading, HStack, Icon, Text } from '@immich/ui';
   import { mdiBugOutline, mdiMessageOutline, mdiSourceBranch, mdiStarOutline } from '@mdi/js';
   import uPlot from 'uplot';
@@ -17,6 +17,8 @@
       key: 'sync',
     },
   };
+
+  void loadGithubData();
 </script>
 
 <Container size="giant" center>
