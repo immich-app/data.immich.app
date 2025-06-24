@@ -23,7 +23,7 @@
   {@render children?.()}
 
   <HStack gap={0}>
-    {#each items as item}
+    {#each items as item, index (index)}
       <Button
         href={item.href}
         shape="round"
