@@ -10,17 +10,17 @@ type GithubReportData = Array<[number, number]>;
 type GithubDataRecord = [DateTime, number];
 
 type GithubData = {
-  issues: GithubDataRecord[];
-  pullRequests: GithubDataRecord[];
-  stars: GithubDataRecord[];
-  discussions: GithubDataRecord[];
+  issues?: GithubDataRecord[];
+  pullRequests?: GithubDataRecord[];
+  stars?: GithubDataRecord[];
+  discussions?: GithubDataRecord[];
 };
 
 export const githubData = $state<GithubData>({
-  stars: [],
-  issues: [],
-  pullRequests: [],
-  discussions: [],
+  stars: undefined,
+  issues: undefined,
+  pullRequests: undefined,
+  discussions: undefined,
 });
 
 const asTimestamp = ([timestamp, value]: [number, number]) =>
