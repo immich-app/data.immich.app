@@ -15,7 +15,7 @@
 </script>
 
 <div class="bg-dark/10 rounded-t-3xl mt-16 p-8">
-  <div class="max-w-screen-lg mx-auto xl:py-8">
+  <div class="max-w-(--breakpoint-lg) mx-auto xl:py-8">
     <Stack gap={8}>
       <div class="grid grid-cols-2 gap-8 place-center lg:grid-cols-5">
         <Stack>
