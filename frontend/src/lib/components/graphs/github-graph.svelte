@@ -2,11 +2,9 @@
   import '$lib/app.css';
   import { debounce } from '$lib/utils';
   import { LoadingSpinner, Theme, theme } from '@immich/ui';
-  import { DateTime } from 'luxon';
-  import { onMount, untrack } from 'svelte';
   import uPlot, { type Axis } from 'uplot';
 
-  type DataRecord = [DateTime, number];
+  type DataRecord = [number, number];
   type Colors = 'yellow' | 'green' | 'purple' | 'blue';
 
   type Props = {
@@ -21,23 +19,13 @@
 
   let chartElement: HTMLDivElement | undefined = $state();
   let tooltipElement: HTMLDivElement | undefined = $state();
-  let chartWidth: number = $state(0);
-  let chartHeight: number = $state(0);
   let chartId = $state('');
   let tooltipDate = $state('');
   let tooltipValue = $state('');
   let mousePosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
+  let isDark = $derived(theme.value === Theme.Dark);
 
-  const { xAxis, yAxis } = $derived.by(() => {
-    const xAxis: number[] = [];
-    const yAxis: number[] = [];
-
-    for (const [date, value] of data ?? []) {
-      xAxis.push(date.toMillis() / 1000);
-      yAxis.push(value);
-    }
-    return { xAxis, yAxis };
-  });
+  let plot: uPlot;
 
   let colors = {
     yellow: 'rgb(255, 197, 0)',
@@ -53,7 +41,69 @@
     blue: 'rgba(63, 106, 222, 0.1)',
   };
 
-  let isDark = $derived(theme.value === Theme.Dark);
+  const axis: Axis = {
+    stroke: () => (isDark ? '#ccc' : 'black'),
+    ticks: {
+      stroke: () => (isDark ? '#444' : '#ddd'),
+    },
+    grid: {
+      show: false,
+    },
+  };
+
+  const options: uPlot.Options = {
+    id,
+    padding: [8, 8, 8, 8],
+    cursor: cursorOpts,
+    width: 500,
+    height: 300,
+    scales: {},
+    legend: {
+      show: true,
+    },
+    series: [
+      {
+        value: '{YYYY}-{MM}-{DD}',
+        label: 'Date',
+      },
+      {
+        show: true,
+        spanGaps: false,
+        stroke: () => colors[color],
+        width: 2,
+        fill: () => areaColor[color],
+        label,
+      },
+    ],
+
+    axes: [axis, axis],
+
+    hooks: {
+      setCursor: [(u) => setCursorHook(u)],
+      setSeries: [() => hideTooltipElement()],
+    },
+  };
+
+  const setCursorHook = (u: uPlot) => {
+    if (u.root.id != chartId || !tooltipElement) {
+      return;
+    }
+
+    const { idx } = u.cursor;
+
+    if (idx == null) {
+      hideTooltipElement();
+      return;
+    }
+
+    const date = new Date(u.data[0][idx] * 1000).toLocaleDateString();
+    const value = u.data[1][idx];
+
+    tooltipDate = date;
+    tooltipValue = value?.toLocaleString() || '';
+
+    showTooltipElement();
+  };
 
   const hideTooltipElement = () => {
     tooltipDate = '';
@@ -69,114 +119,49 @@
     }
   };
 
-  const axis: Axis = $derived({
-    stroke: () => (isDark ? '#ccc' : 'black'),
-    ticks: {
-      stroke: () => (isDark ? '#444' : '#ddd'),
-    },
-    grid: {
-      show: false,
-    },
-  });
-
-  const opts: uPlot.Options = $derived({
-    id,
-    padding: [16, 16, 16, 16],
-    cursor: cursorOpts,
-    width: chartWidth,
-    height: chartHeight,
-    scales: {},
-    legend: {
-      show: true,
-    },
-    series: [
-      {
-        value: '{YYYY}-{MM}-{DD}',
-        label: 'Date',
-      },
-      {
-        show: true,
-        spanGaps: false,
-        stroke: colors[color],
-        width: 2,
-        fill: areaColor[color],
-        label,
-      },
-    ],
-
-    axes: [axis, axis],
-
-    hooks: {
-      setCursor: [
-        (u) => {
-          if (u.root.id != chartId || !tooltipElement) {
-            return;
-          }
-
-          const { idx } = u.cursor;
-
-          if (idx == null) {
-            hideTooltipElement();
-            return;
-          }
-
-          const date = new Date(u.data[0][idx] * 1000).toLocaleDateString();
-          const value = u.data[1][idx];
-
-          tooltipDate = date;
-          tooltipValue = value?.toLocaleString() || '';
-
-          showTooltipElement();
-        },
-      ],
-      setSeries: [() => hideTooltipElement()],
-    },
-  });
-
-  const formatData: uPlot.AlignedData = $derived([new Float64Array(xAxis), new Float64Array(yAxis)]);
-
-  let plot: uPlot;
-  onMount(() => {
-    plot = new uPlot(opts, formatData, chartElement);
-  });
-
-  $effect(() => {
-    plot.setData(formatData);
-  });
-
-  $effect(() => {
-    // really this is just to make this reactive when opts updates.
-    if (!opts) {
+  const onDataChange = (data?: DataRecord[]) => {
+    if (!data || !chartElement) {
       return;
     }
 
-    plot.destroy();
-    untrack(() => (plot = new uPlot(opts, formatData, chartElement)));
-  });
+    const xAxis: number[] = [];
+    const yAxis: number[] = [];
 
-  const onResize = debounce(() => {
-    plot?.setSize({ width: chartWidth, height: chartHeight });
+    plot?.destroy();
+
+    for (const [date, value] of data) {
+      xAxis.push(date);
+      yAxis.push(value);
+    }
+
+    plot = new uPlot(options, [new Float64Array(xAxis), new Float64Array(yAxis)], chartElement);
+    plot.setSize({ width: chartElement.clientWidth, height: chartElement.clientHeight });
+  };
+
+  const onThemeChange = () => plot?.redraw(false);
+
+  $effect(() => onDataChange(data));
+  $effect(() => theme.value && onThemeChange());
+
+  const onresize = debounce(() => {
+    if (chartElement && plot) {
+      plot.setSize({ width: chartElement.clientWidth, height: chartElement.clientHeight });
+    }
   }, 150);
 
-  const onMouseMove = (event: MouseEvent) => {
+  const onmousemove = (event: MouseEvent) => {
     mousePosition.x = event.clientX;
     mousePosition.y = event.clientY;
   };
 </script>
 
-<svelte:window onresize={onResize} onmousemove={onMouseMove} />
+<svelte:window {onresize} {onmousemove} />
 
-{#if data === undefined}
-  <div class="flex h-[275px] justify-center items-center">
-    <LoadingSpinner size="giant" />
-  </div>
-{:else}
-  <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_mouse_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div class="h-[275px] my-2">
   <div
-    class="h-[275px] mb-10 w-full relative"
-    bind:clientWidth={chartWidth}
-    bind:clientHeight={chartHeight}
+    class="h-full w-full relative flex items-center justify-center"
     bind:this={chartElement}
     onmouseover={() => {
       showTooltipElement();
@@ -186,16 +171,18 @@
       hideTooltipElement();
       chartId = '';
     }}
-  ></div>
+  >
+    {#if !data}
+      <LoadingSpinner size="giant" />
+    {/if}
+  </div>
   <div
     bind:this={tooltipElement}
     style="top: {mousePosition.y - 32}px; left: {mousePosition.x - 112}px"
-    class="absolute border shadow-md text-xs w-[100px] rounded-lg bg-light py-2 px-3 text-center font-mono {chartId &&
-    tooltipValue
-      ? ''
-      : 'hidden'}"
+    class:hidden={!(chartId && tooltipValue)}
+    class="absolute border shadow-md text-xs w-[100px] rounded-lg bg-light py-2 px-3 text-center font-mono"
   >
     <p>{tooltipDate}</p>
     <p class="font-bold">{tooltipValue}</p>
   </div>
-{/if}
+</div>

@@ -1,5 +1,3 @@
-import { DateTime } from 'luxon';
-
 type GithubDataResponse = {
   issues: GithubReportData;
   pullRequests: GithubReportData;
@@ -7,33 +5,21 @@ type GithubDataResponse = {
   discussions: GithubReportData;
 };
 type GithubReportData = Array<[number, number]>;
-type GithubDataRecord = [DateTime, number];
+type GithubDataRecord = [number, number];
 
-type GithubData = {
-  issues?: GithubDataRecord[];
-  pullRequests?: GithubDataRecord[];
-  stars?: GithubDataRecord[];
-  discussions?: GithubDataRecord[];
-};
-
-export const githubData = $state<GithubData>({
-  stars: undefined,
-  issues: undefined,
-  pullRequests: undefined,
-  discussions: undefined,
-});
-
-const asTimestamp = ([timestamp, value]: [number, number]) =>
-  [DateTime.fromSeconds(timestamp), value] as [DateTime, number];
+export const githubStars = $state<{ value?: GithubDataRecord[] }>({});
+export const githubIssues = $state<{ value?: GithubDataRecord[] }>({});
+export const githubPullRequests = $state<{ value?: GithubDataRecord[] }>({});
+export const githubDiscussions = $state<{ value?: GithubDataRecord[] }>({});
 
 export const loadGithubData = async () => {
   const response = await fetch('/api/github');
   if (response.ok) {
     const { stars, issues, pullRequests, discussions } = (await response.json()) as GithubDataResponse;
 
-    githubData.stars = stars.map(asTimestamp);
-    githubData.pullRequests = pullRequests.map(asTimestamp);
-    githubData.issues = issues.map(asTimestamp);
-    githubData.discussions = discussions.map(asTimestamp);
+    githubStars.value = stars;
+    githubIssues.value = issues;
+    githubPullRequests.value = pullRequests;
+    githubDiscussions.value = discussions;
   }
 };

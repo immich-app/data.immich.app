@@ -1,7 +1,13 @@
 <script lang="ts">
   import '$lib/app.css';
   import GithubGraph from '$lib/components/graphs/github-graph.svelte';
-  import { githubData, loadGithubData } from '$lib/services/api.svelte';
+  import {
+    githubDiscussions,
+    githubIssues,
+    githubPullRequests,
+    githubStars,
+    loadGithubData,
+  } from '$lib/services/api.svelte';
   import { Card, CardBody, CardHeader, CardTitle, Container, Heading, HStack, Icon, Text } from '@immich/ui';
   import { mdiBugOutline, mdiMessageOutline, mdiSourceBranch, mdiStarOutline } from '@mdi/js';
   import uPlot from 'uplot';
@@ -37,7 +43,7 @@
         </CardTitle>
       </CardHeader>
       <CardBody>
-        <GithubGraph color="yellow" id="stars-chart" data={githubData.stars} {cursorOpts} label="Stars" />
+        <GithubGraph color="yellow" id="stars-chart" data={githubStars.value} {cursorOpts} label="Stars" />
       </CardBody>
     </Card>
     <Card>
@@ -50,7 +56,7 @@
         </CardTitle>
       </CardHeader>
       <CardBody>
-        <GithubGraph color="blue" id="issues-chart" data={githubData.issues} {cursorOpts} label="Issues" />
+        <GithubGraph color="blue" id="issues-chart" data={githubIssues.value} {cursorOpts} label="Issues" />
       </CardBody>
     </Card>
     <Card>
@@ -63,7 +69,7 @@
         </CardTitle>
       </CardHeader>
       <CardBody>
-        <GithubGraph color="green" id="pull-requests-chart" data={githubData.pullRequests} {cursorOpts} label="PR" />
+        <GithubGraph color="green" id="pull-requests-chart" data={githubPullRequests.value} {cursorOpts} label="PR" />
       </CardBody>
     </Card>
     <Card>
@@ -76,7 +82,7 @@
         </CardTitle>
       </CardHeader>
       <CardBody>
-        <GithubGraph color="purple" id="discussions-chart" data={githubData.discussions} {cursorOpts} label="Topics" />
+        <GithubGraph color="purple" id="discussions-chart" data={githubDiscussions.value} {cursorOpts} label="Topics" />
       </CardBody>
     </Card>
   </div>
