@@ -10,8 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  tofu_version: '1.7.1'
-  tg_version: '0.69.0'
+  tofu_version: '1.10.2'
+  tg_version: '0.83.0'
   ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
 
 jobs:
@@ -96,7 +96,7 @@ jobs:
 
       - name: Deploy All
         working-directory: ${{ env.working_dir }}
-        run: op run --env-file=".env" -- terragrunt run-all apply --terragrunt-non-interactive
+        run: op run --env-file=".env" -- terragrunt run --all apply --non-interactive
 
       - name: Deploy Backend Output
         id: deploy-backend-output
