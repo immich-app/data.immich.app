@@ -28,7 +28,7 @@ const newIngestApiWorker = (request: FetchRequest, env: WorkerEnv) => {
   return new IngestApiWorker(queue);
 };
 
-const withSlug = (req: FetchRequest, env: WorkerEnv) => {
+const slugAuth = (req: FetchRequest, env: WorkerEnv) => {
   const slug = env.SLUG;
   if (slug && req.params.slug !== slug) {
     return error(401, 'Unauthorized');
@@ -40,8 +40,9 @@ const handleError = (err: Error) => {
 };
 
 const router = AutoRouter<FetchRequest, [WorkerEnv, ExecutionContext]>()
-  .get('/api/github', (...args) => newApiWorker(...args).getGithubReports())
-  .post('/ingest/github/:slug', withSlug, async (req, env) =>
+  .get('/api/github', (...args) => newApiWorker(...args).getGithubData())
+  .get('/api/reddit', (...args) => newApiWorker(...args).getRedditData())
+  .post('/ingest/github/:slug', slugAuth, async (req, env) =>
     newIngestApiWorker(req, env)
       .onGithubEvent(await req.json())
       .catch(handleError)

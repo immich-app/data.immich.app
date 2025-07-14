@@ -7,6 +7,8 @@
     githubPullRequests,
     githubStars,
     loadGithubData,
+    loadRedditData,
+    redditMembers,
   } from '$lib/services/api.svelte';
   import {
     Card,
@@ -21,7 +23,7 @@
     Stack,
     Text,
   } from '@immich/ui';
-  import { mdiBugOutline, mdiMessageOutline, mdiSourceBranch, mdiStarOutline } from '@mdi/js';
+  import { mdiAccountGroup, mdiBugOutline, mdiMessageOutline, mdiSourceBranch, mdiStarOutline } from '@mdi/js';
   import { DateTime } from 'luxon';
   import uPlot from 'uplot';
   import 'uplot/dist/uPlot.min.css';
@@ -41,6 +43,7 @@
   const futo = DateTime.fromObject({ year: 2024, month: 5, day: 1 }, { zone: 'America/Chicago' });
 
   void loadGithubData();
+  void loadRedditData();
 </script>
 
 <Container size="giant" center>
@@ -48,7 +51,7 @@
     <Heading size="title">Immich Data</Heading>
 
     <section class="flex flex-col gap-4">
-      <Heading size="large" class="flex gap-1 items-center mt-4" tag="h1">Statistics</Heading>
+      <Heading size="large" tag="h1">Statistics</Heading>
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
         <Card color="secondary">
           <CardHeader class="text-center">
@@ -100,9 +103,7 @@
 
     <section class="flex flex-col gap-4">
       <div>
-        <Heading size="large" class="flex gap-1 items-center" tag="h1">
-          <span>GitHub Trends</span>
-        </Heading>
+        <Heading size="large" tag="h1">GitHub</Heading>
         <Text color="muted">immich-app/immich</Text>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -167,6 +168,34 @@
               data={githubDiscussions.value}
               {cursorOpts}
               label="Topics"
+            />
+          </CardBody>
+        </Card>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-4">
+      <div>
+        <Heading size="large" tag="h1">reddit</Heading>
+        <Text color="muted">r/immich</Text>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <HStack>
+                <Icon icon={mdiAccountGroup} />
+                <span>Total Members</span>
+              </HStack>
+            </CardTitle>
+          </CardHeader>
+          <CardBody>
+            <GithubGraph
+              color="orange"
+              id="reddit-members"
+              data={redditMembers.value}
+              {cursorOpts}
+              label="Reddit members"
             />
           </CardBody>
         </Card>

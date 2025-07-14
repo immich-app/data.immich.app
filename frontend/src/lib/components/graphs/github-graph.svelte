@@ -5,7 +5,7 @@
   import uPlot, { type Axis } from 'uplot';
 
   type DataRecord = [number, number];
-  type Colors = 'yellow' | 'green' | 'purple' | 'blue';
+  type Colors = 'yellow' | 'green' | 'purple' | 'blue' | 'orange';
 
   type Props = {
     id: string;
@@ -32,6 +32,7 @@
     green: 'rgb(70, 183, 83)',
     purple: 'rgb(172, 124, 249)',
     blue: 'rgb(63, 106, 222)',
+    orange: 'rgb(255, 69, 0)',
   };
 
   let areaColor = {
@@ -39,6 +40,7 @@
     green: 'rgba(70, 183, 83, 0.1)',
     purple: 'rgba(172, 124, 249, 0.1)',
     blue: 'rgba(63, 106, 222, 0.1)',
+    orange: 'rgba(255, 69, 0, 0.1)',
   };
 
   const axis: Axis = {
