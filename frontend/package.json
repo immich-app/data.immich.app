@@ -40,7 +40,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@immich/ui": "^0.24.4",
+    "@immich/ui": "^0.25.0",
     "@mdi/js": "^7.4.47",
     "luxon": "^3.5.0",
     "simple-icons": "^15.11.0",
