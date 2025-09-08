@@ -4,6 +4,7 @@
   import PageContent from '$lib/components/layout/PageContent.svelte';
   import { backendUrl } from '$lib/environment';
   import { AppShell, AppShellHeader, initializeTheme } from '@immich/ui';
+  import { siGithub } from 'simple-icons';
   import type { Snippet } from 'svelte';
 
   type Props = {
@@ -24,6 +25,7 @@
         {
           title: 'GitHub',
           href: 'https://github.com/immich-app/data.immich.app',
+          icon: siGithub,
           external: true,
         },
       ]}

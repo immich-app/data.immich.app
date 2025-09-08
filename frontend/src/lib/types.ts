@@ -1,10 +1,10 @@
-import type { Color } from '@immich/ui';
+import type { Color, IconLike } from '@immich/ui';
 
 export type HeaderItem = {
   title: string;
   href: string;
   color?: Color;
   variant?: 'outline' | 'ghost' | 'filled';
-  icon?: string;
+  icon?: IconLike;
   external?: boolean;
 };
