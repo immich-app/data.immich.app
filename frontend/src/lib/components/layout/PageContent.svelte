@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Footer from '$lib/components/layout/Footer.svelte';
+  import { SiteFooter } from '@immich/ui';
   import type { Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
 
@@ -17,5 +17,5 @@
       {@render children?.()}
     </div>
   </div>
-  <Footer />
+  <SiteFooter />
 </div>
