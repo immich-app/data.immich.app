@@ -12,6 +12,11 @@ export default [
   prettier,
   ...svelte.configs['flat/prettier'],
   {
+    rules: {
+      'svelte/no-navigation-without-resolve': 'off',
+    },
+  },
+  {
     languageOptions: {
       globals: {
         ...globals.browser,
