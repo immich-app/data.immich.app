@@ -46,7 +46,7 @@
     "fflate": "^0.8.2",
     "itty-router": "^5.0.18",
     "luxon": "^3.5.0",
-    "p-limit": "^6.2.0"
+    "p-limit": "^7.0.0"
   },
   "volta": {
     "node": "22.19.0"
