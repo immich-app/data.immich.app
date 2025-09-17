@@ -6,6 +6,7 @@
     githubIssues,
     githubPullRequests,
     githubStars,
+    githubMergedPullRequests,
     loadGithubData,
   } from '$lib/services/api.svelte';
   import {
@@ -167,6 +168,25 @@
               data={githubDiscussions.value}
               {cursorOpts}
               label="Topics"
+            />
+          </CardBody>
+        </Card>
+        <Card color="secondary">
+          <CardHeader>
+            <CardTitle>
+              <HStack>
+                <Icon icon={mdiSourceBranch} />
+                <span>Total PRs Merged (Cumulative)</span>
+              </HStack>
+            </CardTitle>
+          </CardHeader>
+          <CardBody>
+            <GithubGraph
+              color="green"
+              id="merged-prs-chart"
+              data={githubMergedPullRequests.value}
+              {cursorOpts}
+              label="Merged PRs"
             />
           </CardBody>
         </Card>
