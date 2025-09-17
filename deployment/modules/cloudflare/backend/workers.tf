@@ -136,6 +136,45 @@ resource "cloudflare_workers_script" "data_ingest_processor" {
   compatibility_flags = ["nodejs_compat"]
 }
 
+resource "cloudflare_workers_script" "data_ingest_cron" {
+  account_id = var.cloudflare_account_id
+  name       = "data-ingest-cron${local.resource_suffix}"
+  content    = file("${var.dist_dir}/backend/index.js")
+  module     = true
+
+  plain_text_binding {
+    name = "ENVIRONMENT"
+    text = var.env
+  }
+
+  dynamic "plain_text_binding" {
+    for_each = var.stage != "" ? [var.stage] : []
+    content {
+      name = "STAGE"
+      text = var.stage
+    }
+  }
+
+  plain_text_binding {
+    name = "VMETRICS_DATA_API_URL"
+    text = local.vmetrics_data_api_url
+  }
+
+  secret_text_binding {
+    name = "VMETRICS_DATA_WRITE_TOKEN"
+    text = var.vmetrics_data_write_token
+  }
+
+  compatibility_date  = "2025-09-17"
+  compatibility_flags = ["nodejs_compat"]
+}
+
+resource "cloudflare_workers_cron_trigger" "data_ingest_cron" {
+  account_id = var.cloudflare_account_id
+  script_name = cloudflare_workers_script.data_ingest_cron.name
+  schedules    = [ "* * * * *" ]
+}
+
 locals {
   data_api_url   = "${local.domain}/api"
   ingest_api_url = "${local.domain}/ingest"

@@ -196,7 +196,7 @@
 
     <section class="flex flex-col gap-4">
       <div>
-        <Heading size="large" tag="h1">reddit</Heading>
+        <Heading size="large" tag="h1">Reddit</Heading>
         <Text color="muted">r/immich</Text>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">

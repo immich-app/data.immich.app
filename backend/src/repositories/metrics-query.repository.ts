@@ -20,9 +20,9 @@ export class MetricsQueryRepository implements IMetricsQueryRepository {
     private environment: string,
   ) {}
 
-  async queryMaxOverTime({ metricName, start, end, step }: QueryMaxOverTimeArgs): Promise<RangeQueryResponse> {
+  async queryMaxOverTime({ metricName, start, end, step, labels }: QueryMaxOverTimeArgs): Promise<RangeQueryResponse> {
     const url = new URL(`${this.vmetricsApiUrl}/api/v1/query_range`);
-    const query = `max(max_over_time(${metricName}{environment="${this.environment}", repository_name="immich"}[${step}]))`;
+    const query = `max(max_over_time(${metricName}{environment="${this.environment}"${labels.length > 0 ? ',' + labels.join(',') : ''}}[${step}]))`;
     const params = {
       query,
       start: `${start}`,
