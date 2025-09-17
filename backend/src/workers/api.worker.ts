@@ -11,6 +11,7 @@ export class ApiWorker {
       pullRequests: { metricName: 'immich_data_repository_pull_request_open_total' },
       stars: { metricName: 'immich_data_repository_star_total' },
       discussions: { metricName: 'immich_data_repository_discussion_total' },
+      mergedPullRequests: { metricName: 'immich_data_repository_pull_request_merged_total' },
     };
 
     const promises = Object.entries(metrics).map(async ([key, value]) => {
