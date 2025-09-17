@@ -17,7 +17,8 @@ export const githubMergedPullRequests = $state<{ value?: GithubDataRecord[] }>({
 export const loadGithubData = async () => {
   const response = await fetch('/api/github');
   if (response.ok) {
-    const { stars, issues, pullRequests, discussions, mergedPullRequests } = (await response.json()) as GithubDataResponse;
+    const { stars, issues, pullRequests, discussions, mergedPullRequests } =
+      (await response.json()) as GithubDataResponse;
 
     githubStars.value = stars;
     githubIssues.value = issues;
