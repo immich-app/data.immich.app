@@ -21,3 +21,6 @@ SLUG = "slug"
   max_batch_timeout = 30
   max_retries = 10
   dead_letter_queue = "data-ingest-dev-dlq"
+
+[triggers]
+crons = ["0 */6 * * *"]

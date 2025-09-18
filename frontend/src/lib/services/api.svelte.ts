@@ -1,18 +1,18 @@
 type GithubDataResponse = {
-  issues: GithubReportData;
-  pullRequests: GithubReportData;
-  stars: GithubReportData;
-  discussions: GithubReportData;
-  mergedPullRequests: GithubReportData;
+  issues: ReportData;
+  pullRequests: ReportData;
+  stars: ReportData;
+  discussions: ReportData;
+  mergedPullRequests: ReportData;
 };
-type GithubReportData = Array<[number, number]>;
-type GithubDataRecord = [number, number];
+type ReportData = Array<[number, number]>;
+type DataRecord = [number, number];
 
-export const githubStars = $state<{ value?: GithubDataRecord[] }>({});
-export const githubIssues = $state<{ value?: GithubDataRecord[] }>({});
-export const githubPullRequests = $state<{ value?: GithubDataRecord[] }>({});
-export const githubDiscussions = $state<{ value?: GithubDataRecord[] }>({});
-export const githubMergedPullRequests = $state<{ value?: GithubDataRecord[] }>({});
+export const githubStars = $state<{ value?: DataRecord[] }>({});
+export const githubIssues = $state<{ value?: DataRecord[] }>({});
+export const githubPullRequests = $state<{ value?: DataRecord[] }>({});
+export const githubDiscussions = $state<{ value?: DataRecord[] }>({});
+export const githubMergedPullRequests = $state<{ value?: DataRecord[] }>({});
 
 export const loadGithubData = async () => {
   const response = await fetch('/api/github');
@@ -25,5 +25,19 @@ export const loadGithubData = async () => {
     githubPullRequests.value = pullRequests;
     githubDiscussions.value = discussions;
     githubMergedPullRequests.value = mergedPullRequests;
+  }
+};
+
+type RedditDataResponse = {
+  subscribers: ReportData;
+};
+
+export const redditMembers = $state<{ value?: DataRecord[] }>({});
+
+export const loadRedditData = async () => {
+  const response = await fetch('/api/reddit');
+  if (response.ok) {
+    const { subscribers } = (await response.json()) as RedditDataResponse;
+    redditMembers.value = subscribers;
   }
 };

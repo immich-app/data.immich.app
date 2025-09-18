@@ -3,4 +3,4 @@ export interface IMetricsQueryRepository {
 }
 
 export type RangeQueryResponse = { values: [number, number][] }[];
-export type QueryMaxOverTimeArgs = { metricName: string; start: number; end: number; step: string };
+export type QueryMaxOverTimeArgs = { metricName: string; start: number; end: number; step: string; labels: string[] };

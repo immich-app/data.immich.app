@@ -9,6 +9,7 @@ import { MetricsQueryRepository } from 'src/repositories/metrics-query.repositor
 import { ApiWorker } from 'src/workers/api.worker';
 import { IngestApiWorker } from 'src/workers/ingest-api.worker';
 import { IngestProcessorWorker } from 'src/workers/ingest-processor.worker';
+import { RedditIngestWorker } from 'src/workers/reddit-ingest.worker';
 
 type FetchRequest = IRequest & Parameters<ExportedHandlerFetchHandler>[0];
 
@@ -28,7 +29,7 @@ const newIngestApiWorker = (request: FetchRequest, env: WorkerEnv) => {
   return new IngestApiWorker(queue);
 };
 
-const withSlug = (req: FetchRequest, env: WorkerEnv) => {
+const slugAuth = (req: FetchRequest, env: WorkerEnv) => {
   const slug = env.SLUG;
   if (slug && req.params.slug !== slug) {
     return error(401, 'Unauthorized');
@@ -40,8 +41,9 @@ const handleError = (err: Error) => {
 };
 
 const router = AutoRouter<FetchRequest, [WorkerEnv, ExecutionContext]>()
-  .get('/api/github', (...args) => newApiWorker(...args).getGithubReports())
-  .post('/ingest/github/:slug', withSlug, async (req, env) =>
+  .get('/api/github', (...args) => newApiWorker(...args).getGithubData())
+  .get('/api/reddit', (...args) => newApiWorker(...args).getRedditData())
+  .post('/ingest/github/:slug', slugAuth, async (req, env) =>
     newIngestApiWorker(req, env)
       .onGithubEvent(await req.json())
       .catch(handleError)
@@ -65,5 +67,17 @@ export default {
     }
 
     await influxProvider.flush();
+  },
+  scheduled: async (event, env) => {
+    const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_DATA_API_URL, env.VMETRICS_DATA_WRITE_TOKEN);
+    const metricsRepository = new MetricsPushRepository('immich_data_repository', {}, [influxProvider]);
+    const redditWorker = new RedditIngestWorker(metricsRepository, asEnvTag(env));
+
+    try {
+      await redditWorker.fetchAndStoreCurrentMetrics('immich');
+      await influxProvider.flush();
+    } catch (error) {
+      console.error('Failed to fetch Reddit metrics:', error);
+    }
   },
 } satisfies ExportedHandler<WorkerEnv, QueueItem>;
