@@ -168,7 +168,6 @@ export class BackfillService {
     let opened = 0;
     let closed = 0;
 
-    const metricPromises = [];
     let count = 0;
 
     for (const {

@@ -10,6 +10,8 @@
     loadGithubData,
     loadRedditData,
     redditMembers,
+    loadDiscordData,
+    discordMembers,
   } from '$lib/services/api.svelte';
   import {
     Card,
@@ -45,6 +47,7 @@
 
   void loadGithubData();
   void loadRedditData();
+  void loadDiscordData();
 </script>
 
 <Container size="giant" center>
@@ -196,8 +199,8 @@
 
     <section class="flex flex-col gap-4">
       <div>
-        <Heading size="large" tag="h1">Reddit</Heading>
-        <Text color="muted">r/immich</Text>
+        <Heading size="large" tag="h1">Community</Heading>
+        <Text color="muted">r/immich • discord.gg/immich</Text>
       </div>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card color="secondary">
@@ -205,7 +208,7 @@
             <CardTitle>
               <HStack>
                 <Icon icon={mdiAccountGroup} />
-                <span>Total Members</span>
+                <span>Reddit Members</span>
               </HStack>
             </CardTitle>
           </CardHeader>
@@ -216,6 +219,25 @@
               data={redditMembers.value}
               {cursorOpts}
               label="Reddit members"
+            />
+          </CardBody>
+        </Card>
+        <Card color="secondary">
+          <CardHeader>
+            <CardTitle>
+              <HStack>
+                <Icon icon={mdiAccountGroup} />
+                <span>Discord Members</span>
+              </HStack>
+            </CardTitle>
+          </CardHeader>
+          <CardBody>
+            <GithubGraph
+              color="purple"
+              id="discord-members"
+              data={discordMembers.value}
+              {cursorOpts}
+              label="Discord members"
             />
           </CardBody>
         </Card>

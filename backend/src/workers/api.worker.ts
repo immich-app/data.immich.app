@@ -22,6 +22,12 @@ export class ApiWorker {
     });
   }
 
+  async getDiscordData() {
+    return this.asTimeSeries({
+      members: { metricName: 'immich_data_repository_discord_member_total', labels: [] },
+    });
+  }
+
   async asTimeSeries(metrics: Record<string, { metricName: string; labels: string[] }>) {
     const promises = Object.entries(metrics).map(async ([key, value]) => {
       const results = await this.metricsRepository.queryMaxOverTime({

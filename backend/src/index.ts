@@ -7,6 +7,7 @@ import { InfluxMetricsPushProvider } from 'src/repositories/influx-metrics-provi
 import { MetricsPushRepository } from 'src/repositories/metrics-push.repository';
 import { MetricsQueryRepository } from 'src/repositories/metrics-query.repository';
 import { ApiWorker } from 'src/workers/api.worker';
+import { DiscordIngestWorker } from 'src/workers/discord-ingest.worker';
 import { IngestApiWorker } from 'src/workers/ingest-api.worker';
 import { IngestProcessorWorker } from 'src/workers/ingest-processor.worker';
 import { RedditIngestWorker } from 'src/workers/reddit-ingest.worker';
@@ -19,7 +20,7 @@ const newApiWorker = (request: FetchRequest, env: WorkerEnv, ctx: ExecutionConte
   const deferredRepository = new CloudflareDeferredRepository(ctx);
   const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_DATA_API_URL, env.VMETRICS_DATA_WRITE_TOKEN);
   deferredRepository.defer(() => influxProvider.flush());
-  const metrics = new MetricsQueryRepository(env.VMETRICS_DATA_API_URL, env.VMETRICS_DATA_READ_TOKEN, 'prod');
+  const metrics = new MetricsQueryRepository(env.VMETRICS_DATA_API_URL, env.VMETRICS_DATA_READ_TOKEN, asEnvTag(env));
 
   return new ApiWorker(metrics);
 };
@@ -43,6 +44,7 @@ const handleError = (err: Error) => {
 const router = AutoRouter<FetchRequest, [WorkerEnv, ExecutionContext]>()
   .get('/api/github', (...args) => newApiWorker(...args).getGithubData())
   .get('/api/reddit', (...args) => newApiWorker(...args).getRedditData())
+  .get('/api/discord', (...args) => newApiWorker(...args).getDiscordData())
   .post('/ingest/github/:slug', slugAuth, async (req, env) =>
     newIngestApiWorker(req, env)
       .onGithubEvent(await req.json())
@@ -72,12 +74,16 @@ export default {
     const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_DATA_API_URL, env.VMETRICS_DATA_WRITE_TOKEN);
     const metricsRepository = new MetricsPushRepository('immich_data_repository', {}, [influxProvider]);
     const redditWorker = new RedditIngestWorker(metricsRepository, asEnvTag(env));
+    const discordWorker = new DiscordIngestWorker(metricsRepository, asEnvTag(env));
 
     try {
-      await redditWorker.fetchAndStoreCurrentMetrics('immich');
+      await Promise.all([
+        redditWorker.fetchAndStoreCurrentMetrics('immich'),
+        discordWorker.fetchAndStoreCurrentMetrics('immich'),
+      ]);
       await influxProvider.flush();
     } catch (error) {
-      console.error('Failed to fetch Reddit metrics:', error);
+      console.error('Failed to fetch metrics:', error);
     }
   },
 } satisfies ExportedHandler<WorkerEnv, QueueItem>;
