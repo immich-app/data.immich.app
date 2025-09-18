@@ -53,6 +53,13 @@
     },
   };
 
+  const setLegendToLatest = (u: uPlot) => {
+    if (u.data && u.data[0].length > 0) {
+      const latestIdx = u.data[0].length - 1;
+      u.setLegend({ idx: latestIdx }, false);
+    }
+  };
+
   const options: uPlot.Options = {
     id,
     padding: [8, 8, 8, 8],
@@ -82,29 +89,30 @@
 
     hooks: {
       setCursor: [(u) => setCursorHook(u)],
-      setSeries: [() => hideTooltipElement()],
+      ready: [(u) => setLegendToLatest(u)],
     },
   };
 
   const setCursorHook = (u: uPlot) => {
-    if (u.root.id != chartId || !tooltipElement) {
-      return;
-    }
-
     const { idx } = u.cursor;
 
     if (idx == null) {
-      hideTooltipElement();
+      setLegendToLatest(u);
+      if (u.root.id === chartId) {
+        hideTooltipElement();
+      }
       return;
     }
 
-    const date = new Date(u.data[0][idx] * 1000).toLocaleDateString();
-    const value = u.data[1][idx];
+    if (u.root.id === chartId && tooltipElement) {
+      const date = new Date(u.data[0][idx] * 1000).toLocaleDateString();
+      const value = u.data[1][idx];
 
-    tooltipDate = date;
-    tooltipValue = value?.toLocaleString() || '';
+      tooltipDate = date;
+      tooltipValue = value?.toLocaleString() || '';
 
-    showTooltipElement();
+      showTooltipElement();
+    }
   };
 
   const hideTooltipElement = () => {
