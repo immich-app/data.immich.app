@@ -32,12 +32,34 @@ type RedditDataResponse = {
   subscribers: ReportData;
 };
 
+type DiscordDataResponse = {
+  members: ReportData;
+  online: ReportData;
+  nitro: ReportData;
+  serverTier: ReportData;
+};
+
 export const redditMembers = $state<{ value?: DataRecord[] }>({});
+export const discordMembers = $state<{ value?: DataRecord[] }>({});
+export const discordOnline = $state<{ value?: DataRecord[] }>({});
+export const discordNitro = $state<{ value?: DataRecord[] }>({});
+export const discordServerTier = $state<{ value?: DataRecord[] }>({});
 
 export const loadRedditData = async () => {
   const response = await fetch('/api/reddit');
   if (response.ok) {
     const { subscribers } = (await response.json()) as RedditDataResponse;
     redditMembers.value = subscribers;
+  }
+};
+
+export const loadDiscordData = async () => {
+  const response = await fetch('/api/discord');
+  if (response.ok) {
+    const { members, online, nitro, serverTier } = (await response.json()) as DiscordDataResponse;
+    discordMembers.value = members;
+    discordOnline.value = online;
+    discordNitro.value = nitro;
+    discordServerTier.value = serverTier;
   }
 };

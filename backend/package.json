@@ -16,7 +16,8 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "check": "tsc --noEmit",
-    "backfill:reddit": "tsx src/bin/backfill-reddit.ts"
+    "backfill:reddit": "tsx src/bin/backfill-reddit.ts",
+    "backfill:discord": "tsx src/bin/backfill-discord.ts"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.8.0",
