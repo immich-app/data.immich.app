@@ -172,7 +172,7 @@ resource "cloudflare_workers_script" "data_ingest_cron" {
 resource "cloudflare_workers_cron_trigger" "data_ingest_cron" {
   account_id = var.cloudflare_account_id
   script_name = cloudflare_workers_script.data_ingest_cron.name
-  schedules    = [ "* * * * *" ]
+  schedules    = [ "*/5 * * * *" ]
 }
 
 locals {
