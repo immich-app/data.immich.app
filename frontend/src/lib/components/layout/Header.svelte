@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import type { HeaderItem } from '$lib/types';
-  import { Button, HStack, Logo, ThemeSwitcher } from '@immich/ui';
+  import { Button, HStack, isExternalLink, Logo, ThemeSwitcher } from '@immich/ui';
   import { mdiOpenInNew } from '@mdi/js';
   import type { Snippet } from 'svelte';
 
@@ -28,7 +28,7 @@
         href={item.href}
         shape="round"
         leadingIcon={item.icon}
-        trailingIcon={item.external ? mdiOpenInNew : undefined}
+        trailingIcon={isExternalLink(item.href) ? mdiOpenInNew : undefined}
         variant={item.variant ?? 'ghost'}
         color={(item.color ?? isActive(item.href)) ? 'primary' : 'secondary'}>{item.title}</Button
       >

@@ -40,10 +40,11 @@
   },
   "type": "module",
   "dependencies": {
-    "@immich/ui": "^0.27.1",
+    "@immich/ui": "^0.31.2",
     "@mdi/js": "^7.4.47",
     "luxon": "^3.5.0",
     "simple-icons": "^15.11.0",
+    "svelte-highlight": "^7.8.4",
     "uplot": "^1.6.31"
   }
 }

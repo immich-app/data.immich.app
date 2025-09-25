@@ -26,7 +26,6 @@
           title: 'GitHub',
           href: 'https://github.com/immich-app/data.immich.app',
           icon: siGithub,
-          external: true,
         },
       ]}
     />
