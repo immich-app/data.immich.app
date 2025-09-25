@@ -6,5 +6,4 @@ export type HeaderItem = {
   color?: Color;
   variant?: 'outline' | 'ghost' | 'filled';
   icon?: IconLike;
-  external?: boolean;
 };
