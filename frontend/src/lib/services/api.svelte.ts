@@ -14,7 +14,7 @@ export const githubPullRequests = $state<{ value?: DataRecord[] }>({});
 export const githubDiscussions = $state<{ value?: DataRecord[] }>({});
 export const githubMergedPullRequests = $state<{ value?: DataRecord[] }>({});
 
-export const loadGithubData = async () => {
+const loadGithubData = async () => {
   const response = await fetch('/api/github');
   if (response.ok) {
     const { stars, issues, pullRequests, discussions, mergedPullRequests } =
@@ -45,7 +45,7 @@ export const discordOnline = $state<{ value?: DataRecord[] }>({});
 export const discordNitro = $state<{ value?: DataRecord[] }>({});
 export const discordServerTier = $state<{ value?: DataRecord[] }>({});
 
-export const loadRedditData = async () => {
+const loadRedditData = async () => {
   const response = await fetch('/api/reddit');
   if (response.ok) {
     const { subscribers } = (await response.json()) as RedditDataResponse;
@@ -53,7 +53,7 @@ export const loadRedditData = async () => {
   }
 };
 
-export const loadDiscordData = async () => {
+const loadDiscordData = async () => {
   const response = await fetch('/api/discord');
   if (response.ok) {
     const { members, online, nitro, serverTier } = (await response.json()) as DiscordDataResponse;
@@ -62,4 +62,10 @@ export const loadDiscordData = async () => {
     discordNitro.value = nitro;
     discordServerTier.value = serverTier;
   }
+};
+
+export const load = () => {
+  void loadGithubData();
+  void loadRedditData();
+  void loadDiscordData();
 };
