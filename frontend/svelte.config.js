@@ -5,13 +5,10 @@ process.env.PUBLIC_IMMICH_BACKEND_URL = process.env.PUBLIC_IMMICH_BACKEND_URL ||
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-  // Consult https://kit.svelte.dev/docs/integrations#preprocessors
-  // for more information about preprocessors
   preprocess: vitePreprocess(),
 
   kit: {
     adapter: adapter({
-      fallback: 'index.html',
       pages: '../dist/frontend',
     }),
   },

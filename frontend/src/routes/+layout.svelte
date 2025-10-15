@@ -13,7 +13,7 @@
 
   let { children }: Props = $props();
 
-  initializeTheme();
+  initializeTheme({ selector: 'html', lightClass: 'light', darkClass: 'dark' });
 
   console.log(`Backend URL: ${backendUrl}`);
 </script>

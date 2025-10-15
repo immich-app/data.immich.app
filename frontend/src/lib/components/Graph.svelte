@@ -64,7 +64,7 @@
     id,
     padding: [8, 8, 8, 8],
     cursor: cursorOpts,
-    width: 500,
+    width: 200,
     height: 300,
     scales: {},
     legend: {

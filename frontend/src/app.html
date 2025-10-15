@@ -1,13 +1,45 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Immich - Data</title>
     <meta name="theme-color" content="currentColor" />
-    <meta name="description" content="Graphs and charts for data around Immich" />
     %sveltekit.head%
+    <style>
+      /* prevent FOUC */
+      html {
+        height: 100%;
+        width: 100%;
+      }
+
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script>
+      /**
+       * Prevent FOUC on page load.
+       */
+      const THEME_KEY = 'immich-ui-theme';
+      let value;
+      try {
+        value = JSON.parse(localStorage.getItem(THEME_KEY)).value;
+        if (value !== 'light' && value !== 'dark') {
+          value = undefined;
+        }
+      } catch {
+        // noop
+      }
+
+      if (value === 'light') {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+      }
+    </script>
   </head>
   <body data-sveltekit-preload-data="hover" class="bg-light text-dark">
     <div style="display: contents">%sveltekit.body%</div>
