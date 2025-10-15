@@ -96,7 +96,7 @@
           <CardBody>
             <div class="flex justify-around align-middle h-full">
               <div class="text-center flex flex-col justify-between align-middle">
-                <Text class="text-6xl">0</Text>
+                <Text class="text-6xl">-1</Text>
                 <Text color="muted">days ago</Text>
               </div>
             </div>
