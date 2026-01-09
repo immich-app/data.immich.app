@@ -3,7 +3,7 @@
   import Header from '$lib/components/layout/Header.svelte';
   import PageContent from '$lib/components/layout/PageContent.svelte';
   import { backendUrl } from '$lib/environment';
-  import { AppShell, AppShellHeader, initializeTheme } from '@immich/ui';
+  import { AppShell, AppShellHeader, initializeTheme, TooltipProvider } from '@immich/ui';
   import { siGithub } from 'simple-icons';
   import type { Snippet } from 'svelte';
 
@@ -18,19 +18,21 @@
   console.log(`Backend URL: ${backendUrl}`);
 </script>
 
-<AppShell>
-  <AppShellHeader>
-    <Header
-      items={[
-        {
-          title: 'GitHub',
-          href: 'https://github.com/immich-app/data.immich.app',
-          icon: siGithub,
-        },
-      ]}
-    />
-  </AppShellHeader>
-  <PageContent>
-    {@render children?.()}
-  </PageContent>
-</AppShell>
+<TooltipProvider>
+  <AppShell>
+    <AppShellHeader>
+      <Header
+        items={[
+          {
+            title: 'GitHub',
+            href: 'https://github.com/immich-app/data.immich.app',
+            icon: siGithub,
+          },
+        ]}
+      />
+    </AppShellHeader>
+    <PageContent>
+      {@render children?.()}
+    </PageContent>
+  </AppShell>
+</TooltipProvider>
