@@ -36,7 +36,7 @@
     "tsx": "^4.17.0",
     "typescript": "^5.5.2",
     "vite-node": "^5.0.0",
-    "vite-plugin-node-polyfills": "^0.24.0",
+    "vite-plugin-node-polyfills": "^0.25.0",
     "wrangler": "^4.0.0"
   },
   "dependencies": {
