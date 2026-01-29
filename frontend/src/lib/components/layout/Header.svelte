@@ -16,7 +16,7 @@
   let { items, children }: Props = $props();
 </script>
 
-<nav class="flex items-center justify-between md:gap-2 p-2">
+<nav class="w-full flex items-center justify-between md:gap-2 p-2">
   <a href="/" class="flex gap-2 text-4xl">
     <Logo variant="inline" />
   </a>
