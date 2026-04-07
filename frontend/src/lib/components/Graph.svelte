@@ -1,7 +1,7 @@
 <script lang="ts">
   import '$lib/app.css';
   import { debounce } from '$lib/utils';
-  import { LoadingSpinner, Theme, theme } from '@immich/ui';
+  import { LoadingSpinner, Theme, themeManager } from '@immich/ui';
   import uPlot, { type Axis } from 'uplot';
 
   type DataRecord = [number, number];
@@ -23,7 +23,7 @@
   let tooltipDate = $state('');
   let tooltipValue = $state('');
   let mousePosition = $state<{ x: number; y: number }>({ x: 0, y: 0 });
-  let isDark = $derived(theme.value === Theme.Dark);
+  let isDark = $derived(themeManager.value === Theme.Dark);
 
   let plot: uPlot;
 
@@ -151,7 +151,7 @@
   const onThemeChange = () => plot?.redraw(false);
 
   $effect(() => onDataChange(data));
-  $effect(() => theme.value && onThemeChange());
+  $effect(() => themeManager.value && onThemeChange());
 
   const onresize = debounce(() => {
     if (chartElement && plot) {

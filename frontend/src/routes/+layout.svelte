@@ -3,7 +3,7 @@
   import Header from '$lib/components/layout/Header.svelte';
   import PageContent from '$lib/components/layout/PageContent.svelte';
   import { backendUrl } from '$lib/environment';
-  import { AppShell, AppShellHeader, initializeTheme, TooltipProvider } from '@immich/ui';
+  import { AppShell, AppShellHeader, themeManager, TooltipProvider } from '@immich/ui';
   import { siGithub } from 'simple-icons';
   import type { Snippet } from 'svelte';
 
@@ -13,7 +13,7 @@
 
   let { children }: Props = $props();
 
-  initializeTheme({ selector: 'html', lightClass: 'light', darkClass: 'dark' });
+  themeManager.initialize();
 
   console.log(`Backend URL: ${backendUrl}`);
 </script>
