@@ -1,9 +1,22 @@
 <script lang="ts">
   import '$lib/app.css';
-  import Header from '$lib/components/layout/Header.svelte';
   import PageContent from '$lib/components/layout/PageContent.svelte';
   import { backendUrl } from '$lib/environment';
-  import { AppShell, AppShellHeader, themeManager, TooltipProvider } from '@immich/ui';
+  import {
+    AppShell,
+    AppShellHeader,
+    CommandPaletteButton,
+    commandPaletteManager,
+    CommandPaletteProvider,
+    ControlBar,
+    ControlBarHeader,
+    ControlBarOverflow,
+    getSiteProviders,
+    IconButton,
+    Logo,
+    ThemeSwitcher,
+    TooltipProvider,
+  } from '@immich/ui';
   import { siGithub } from 'simple-icons';
   import type { Snippet } from 'svelte';
 
@@ -13,23 +26,35 @@
 
   let { children }: Props = $props();
 
-  themeManager.initialize();
+  commandPaletteManager.enable();
 
   console.log(`Backend URL: ${backendUrl}`);
 </script>
 
+<CommandPaletteProvider providers={getSiteProviders()} />
+
 <TooltipProvider>
   <AppShell>
     <AppShellHeader>
-      <Header
-        items={[
-          {
-            title: 'GitHub',
-            href: 'https://github.com/immich-app/data.immich.app',
-            icon: siGithub,
-          },
-        ]}
-      />
+      <ControlBar static variant="ghost">
+        <ControlBarHeader class="flex-row items-center">
+          <a href="/">
+            <Logo variant="inline" />
+          </a>
+        </ControlBarHeader>
+        <ControlBarOverflow class="gap-0.5">
+          <IconButton
+            icon={siGithub}
+            aria-label="GitHub"
+            href="https://github.com/immich-app/data.immich.app"
+            color="secondary"
+            variant="ghost"
+            shape="round"
+          />
+          <ThemeSwitcher color="secondary" />
+          <CommandPaletteButton />
+        </ControlBarOverflow>
+      </ControlBar>
     </AppShellHeader>
     <PageContent>
       {@render children?.()}
