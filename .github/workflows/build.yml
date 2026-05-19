@@ -121,13 +121,11 @@ jobs:
           wranglerVersion: '3'
 
       - name: Comment
-        uses: actions-cool/maintain-one-comment@909842216bc8e8658364c572ec52100f4c2cc50a # v3.3.0
+        uses: immich-app/devtools/actions/sticky-comment@0135acd12ad9f3369b94a2aa3c0ae8c835a4e926 # sticky-comment-action-v1.0.0
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          number: ${{ github.event.number }}
+          id: web-pr-url
           body: |
             🚀 Preview deployed to:
             - Frontend URL: https://${{ fromJson(steps.deploy-frontend-output.outputs.output).immich_subdomain.value }}
             - Backend URL: ${{ fromJson(steps.deploy-backend-output.outputs.output).data_api_url.value }}
-          emojis: 'rocket'
-          body-include: '<!-- web PR URL -->'
