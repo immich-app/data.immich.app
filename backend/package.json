@@ -36,7 +36,7 @@
     "typescript": "^6.0.0",
     "typescript-eslint": "^8.56.0",
     "vite-node": "^6.0.0",
-    "vite-plugin-node-polyfills": "^0.26.0",
+    "vite-plugin-node-polyfills": "^0.28.0",
     "vitest": "^4.1.1",
     "wrangler": "^4.0.0"
   },
