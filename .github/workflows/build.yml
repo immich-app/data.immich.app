@@ -84,12 +84,12 @@ jobs:
         uses: 1password/install-cli-action@8d006a0d0a4fd505af7f7ce589e7f768385ff5e4 # v3.0.0
 
       - name: Install Terragrunt
-        uses: eLco/setup-terragrunt@2c5116f8979bb261072ef57c97ac026cd9c27434 # v1.0.3
+        uses: eLco/setup-terragrunt@d6093fd3d1e651013c072facb41d488602b85fbf # v1.0.4
         with:
           terragrunt_version: ${{ env.tg_version }}
 
       - name: 'Install OpenTofu'
-        uses: opentofu/setup-opentofu@fc711fa910b93cba0f3fbecaafc9f42fd0c411cb # v2.0.0
+        uses: opentofu/setup-opentofu@847eaa4afeb791b06daa46e8eafa8b1b68d7cfb4 # v2.0.1
         with:
           tofu_version: ${{ env.tofu_version }}
           tofu_wrapper: false
