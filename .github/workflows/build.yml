@@ -81,7 +81,7 @@ jobs:
           path: '${{ github.workspace }}/dist'
 
       - name: Install 1Password CLI
-        uses: 1password/install-cli-action@8d006a0d0a4fd505af7f7ce589e7f768385ff5e4 # v3.0.0
+        uses: 1password/install-cli-action@a5215d3a7f75c1629216c465ea9ab3ab399c4b71 # v4.0.0
 
       - name: Install Terragrunt
         uses: eLco/setup-terragrunt@d6093fd3d1e651013c072facb41d488602b85fbf # v1.0.4
