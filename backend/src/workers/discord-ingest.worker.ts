@@ -23,9 +23,7 @@ export class DiscordIngestWorker {
         new Metric('discord_nitro')
           .intField('total', data.guild.premium_subscription_count)
           .addTag('environment', this.envTag),
-        new Metric('discord_server_tier')
-          .intField('level', data.guild.premium_tier)
-          .addTag('environment', this.envTag),
+        new Metric('discord_server_tier').intField('level', data.guild.premium_tier).addTag('environment', this.envTag),
       ];
 
       metrics.forEach((metric) => this.metricsRepository.push(metric));
@@ -38,7 +36,6 @@ export class DiscordIngestWorker {
       };
     } catch (error) {
       console.error(`Failed to fetch Discord data for invite ${inviteCode}:`, error);
-      throw error;
     }
   }
 }

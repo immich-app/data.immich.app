@@ -22,7 +22,6 @@ export class RedditIngestWorker {
       return data.subscribers;
     } catch (error) {
       console.error(`Failed to fetch Reddit data for r/${subreddit}:`, error);
-      throw error;
     }
   }
 }
