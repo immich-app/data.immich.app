@@ -165,6 +165,16 @@ resource "cloudflare_workers_script" "data_ingest_cron" {
     text = var.vmetrics_data_write_token
   }
 
+  secret_text_binding {
+    name = "REDDIT_OAUTH_CLIENT_ID"
+    text = var.reddit_oauth_client_id
+  }
+
+  secret_text_binding {
+    name = "REDDIT_OAUTH_CLIENT_SECRET"
+    text = var.reddit_oauth_client_secret
+  }
+
   compatibility_date  = "2025-09-17"
   compatibility_flags = ["nodejs_compat"]
 }

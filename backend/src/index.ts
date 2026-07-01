@@ -73,7 +73,10 @@ export default {
   scheduled: async (event, env) => {
     const influxProvider = new InfluxMetricsPushProvider(env.VMETRICS_DATA_API_URL, env.VMETRICS_DATA_WRITE_TOKEN);
     const metricsRepository = new MetricsPushRepository('immich_data_repository', {}, [influxProvider]);
-    const redditWorker = new RedditIngestWorker(metricsRepository, asEnvTag(env));
+    const redditWorker = new RedditIngestWorker(metricsRepository, asEnvTag(env), {
+      clientId: env.REDDIT_OAUTH_CLIENT_ID,
+      clientSecret: env.REDDIT_OAUTH_CLIENT_SECRET,
+    });
     const discordWorker = new DiscordIngestWorker(metricsRepository, asEnvTag(env));
 
     try {

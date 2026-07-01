@@ -10,3 +10,5 @@ variable "stage" {
 variable "github_app_read_only_id" {}
 variable "github_app_read_only_installation_id" {}
 variable "github_app_read_only_pem_file_pkcs8" {}
+variable "reddit_oauth_client_id" {}
+variable "reddit_oauth_client_secret" {}

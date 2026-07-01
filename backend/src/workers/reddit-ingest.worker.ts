@@ -7,11 +7,12 @@ export class RedditIngestWorker {
   constructor(
     private metricsRepository: IMetricsPushRepository,
     private envTag: string,
+    private oauthCredentials: { clientId: string; clientSecret: string },
   ) {}
 
   async fetchAndStoreCurrentMetrics(subreddit: string = 'immich') {
     try {
-      const data = await this.redditRepository.getSubredditData(subreddit);
+      const data = await this.redditRepository.getSubredditData(subreddit, this.oauthCredentials);
 
       const metric = new Metric('reddit_subscriber')
         .intField('total', data.subscribers)
