@@ -169,7 +169,7 @@
 
 <!-- svelte-ignore a11y_mouse_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="h-[275px] my-2">
+<div class="h-68.75 my-2">
   <div
     class="h-full w-full relative flex items-center justify-center"
     bind:this={chartElement}
@@ -188,9 +188,9 @@
   </div>
   <div
     bind:this={tooltipElement}
-    style="top: {mousePosition.y - 32}px; left: {mousePosition.x - 112}px"
+    style="top: {Math.min(mousePosition.y - 32, window.innerHeight - 132)}px; left: {mousePosition.x - 112}px"
     class:hidden={!(chartId && tooltipValue)}
-    class="absolute border shadow-md text-xs w-[100px] rounded-lg bg-light py-2 px-3 text-center font-mono"
+    class="absolute border shadow-md text-xs w-25 rounded-lg bg-light py-2 px-3 text-center font-mono"
   >
     <p>{tooltipDate}</p>
     <p class="font-bold">{tooltipValue}</p>
