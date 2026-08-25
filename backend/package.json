@@ -20,7 +20,7 @@
     "backfill:discord": "tsx src/bin/backfill-discord.ts"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.21.0",
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
     "@cloudflare/workers-types": "^5.0.0",
     "@eslint/js": "^10.0.1",
     "@octokit/types": "^17.0.0",
