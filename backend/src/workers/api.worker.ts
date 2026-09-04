@@ -8,23 +8,23 @@ export class ApiWorker {
   async getGithubData() {
     const labels = ['repository_name="immich"'];
     return this.asTimeSeries({
-      issues: { metricName: 'immich_data_repository_issue_open_total', labels },
-      pullRequests: { metricName: 'immich_data_repository_pull_request_open_total', labels },
-      stars: { metricName: 'immich_data_repository_star_total', labels },
-      discussions: { metricName: 'immich_data_repository_discussion_total', labels },
-      mergedPullRequests: { metricName: 'immich_data_repository_pull_request_merged_total', labels },
+      issues: { metricName: 'immich_data:repository_issue_open_total:max1h', labels },
+      pullRequests: { metricName: 'immich_data:repository_pull_request_open_total:max1h', labels },
+      stars: { metricName: 'immich_data:repository_star_total:max1h', labels },
+      discussions: { metricName: 'immich_data:repository_discussion_total:max1h', labels },
+      mergedPullRequests: { metricName: 'immich_data:repository_pull_request_merged_total:max1h', labels },
     });
   }
 
   async getRedditData() {
     return this.asTimeSeries({
-      subscribers: { metricName: 'immich_data_repository_reddit_subscriber_total', labels: [] },
+      subscribers: { metricName: 'immich_data:repository_reddit_subscriber_total:max1h', labels: [] },
     });
   }
 
   async getDiscordData() {
     return this.asTimeSeries({
-      members: { metricName: 'immich_data_repository_discord_member_total', labels: [] },
+      members: { metricName: 'immich_data:repository_discord_member_total:max1h', labels: [] },
     });
   }
 
