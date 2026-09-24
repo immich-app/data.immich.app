@@ -114,3 +114,12 @@ url_api = "https://api.github.com/repos/gruntwork-io/terragrunt/releases/assets/
 checksum = "sha256:99b35a84c9354e896fe744274cf3834b6e455770ca3a39abb6b7af81c34928dc"
 url = "https://github.com/gruntwork-io/terragrunt/releases/download/v0.83.0/terragrunt_windows_amd64.exe"
 url_api = "https://api.github.com/repos/gruntwork-io/terragrunt/releases/assets/269983552"
+
+[[tools.wrangler]]
+version = "4.131.0"
+aube = { path = "locks/wrangler/4.131.0~d1f80b8e", digest = "sha256:b3c01dabebaa03bac4f087c48c78f7e3e2d74424b558585593cc3af29446eb31" }
+backend = "npm:wrangler"
+specifiers = ["4.131.0"]
+
+[tools.wrangler.options]
+allow_builds = '["esbuild", "sharp", "workerd"]'
