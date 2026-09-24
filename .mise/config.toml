@@ -2,6 +2,10 @@
 opentofu = "1.10.2"
 terragrunt = "0.83.0"
 node = "24.21.0"
+wrangler = "4.131.0"
+
+[tasks.deploy]
+run = "wrangler pages deploy ${BUILD_DIR} --project-name=${PROJECT_NAME} --branch=${BRANCH_NAME}"
 
 [tasks.tg]
 run = "op run '--env-file={{config_root}}/deployment/.env' -- terragrunt"

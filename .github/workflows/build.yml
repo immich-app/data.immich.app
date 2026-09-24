@@ -118,14 +118,13 @@ jobs:
           echo "output=$(op run --no-masking --env-file='../../../.env' -- terragrunt output -json | jq -c .)" >> $GITHUB_OUTPUT
 
       - name: Publish Frontend to Cloudflare Pages
-        uses: cloudflare/pages-action@f0a1cd58cd66095dee69bfa18fa5efd1dde93bca # v1.5.0
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN_PAGES_UPLOAD }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: ${{ fromJson(steps.deploy-frontend-output.outputs.output).pages_project_name.value }}
-          directory: 'dist/frontend'
-          branch: ${{ fromJson(steps.deploy-frontend-output.outputs.output).pages_branch.value }}
-          wranglerVersion: '3'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN_PAGES_UPLOAD }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BUILD_DIR: dist/frontend
+          PROJECT_NAME: ${{ fromJson(steps.deploy-frontend-output.outputs.output).pages_project_name.value }}
+          BRANCH_NAME: ${{ fromJson(steps.deploy-frontend-output.outputs.output).pages_branch.value }}
+        run: mise run deploy
 
       - name: Comment
         uses: immich-app/devtools/actions/sticky-comment@0135acd12ad9f3369b94a2aa3c0ae8c835a4e926 # sticky-comment-action-v1.0.0
