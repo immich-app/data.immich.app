@@ -36,44 +36,44 @@ checksum = "sha256:158f7685b44de51f6c0df1d153526cbcd3e1bc739a8dfc607721cef75de9e
 url = "https://nodejs.org/dist/v24.21.0/node-v24.21.0-win-x64.zip"
 
 [[tools.opentofu]]
-version = "1.10.2"
+version = "1.12.6"
 backend = "aqua:opentofu/opentofu"
-specifiers = ["1.10.2"]
+specifiers = ["1.12.6"]
 
 [tools.opentofu."platforms.linux-arm64"]
-checksum = "sha256:71a42ae4ead817d0234ea3611361e4b17690afc3ea30ad12a270973223dedccc"
-url = "https://github.com/opentofu/opentofu/releases/download/v1.10.2/tofu_1.10.2_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/269065927"
+checksum = "sha256:9bd0228a81bcd0c88f7045c74378f45a815779f19897191dff7d9efba9976b9e"
+url = "https://github.com/opentofu/opentofu/releases/download/v1.12.6/tofu_1.12.6_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/520762688"
 
 [tools.opentofu."platforms.linux-arm64-musl"]
-checksum = "sha256:71a42ae4ead817d0234ea3611361e4b17690afc3ea30ad12a270973223dedccc"
-url = "https://github.com/opentofu/opentofu/releases/download/v1.10.2/tofu_1.10.2_linux_arm64.tar.gz"
-url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/269065927"
+checksum = "sha256:9bd0228a81bcd0c88f7045c74378f45a815779f19897191dff7d9efba9976b9e"
+url = "https://github.com/opentofu/opentofu/releases/download/v1.12.6/tofu_1.12.6_linux_arm64.tar.gz"
+url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/520762688"
 
 [tools.opentofu."platforms.linux-x64"]
-checksum = "sha256:4d00a35452e7a2c17d7c46bad44142fb393fad39c84427a26433f29c9b0174a4"
-url = "https://github.com/opentofu/opentofu/releases/download/v1.10.2/tofu_1.10.2_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/269065917"
+checksum = "sha256:50a6106fa4de523d09c87af85f3db1dd47535fc005727fdca6852146476b88ec"
+url = "https://github.com/opentofu/opentofu/releases/download/v1.12.6/tofu_1.12.6_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/520762723"
 
 [tools.opentofu."platforms.linux-x64-musl"]
-checksum = "sha256:4d00a35452e7a2c17d7c46bad44142fb393fad39c84427a26433f29c9b0174a4"
-url = "https://github.com/opentofu/opentofu/releases/download/v1.10.2/tofu_1.10.2_linux_amd64.tar.gz"
-url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/269065917"
+checksum = "sha256:50a6106fa4de523d09c87af85f3db1dd47535fc005727fdca6852146476b88ec"
+url = "https://github.com/opentofu/opentofu/releases/download/v1.12.6/tofu_1.12.6_linux_amd64.tar.gz"
+url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/520762723"
 
 [tools.opentofu."platforms.macos-arm64"]
-checksum = "sha256:c5f2750bd3ab2727448336a407c59c29b5defd2e67f4b39f30a0aa7f4c14ddc8"
-url = "https://github.com/opentofu/opentofu/releases/download/v1.10.2/tofu_1.10.2_darwin_arm64.tar.gz"
-url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/269065914"
+checksum = "sha256:f958ec5e511063be9feb180ca015a4cb7977566a9cf6a8550bba8c2a9b5aba74"
+url = "https://github.com/opentofu/opentofu/releases/download/v1.12.6/tofu_1.12.6_darwin_arm64.tar.gz"
+url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/520762710"
 
 [tools.opentofu."platforms.macos-x64"]
-checksum = "sha256:c3e7270e27d1f94ccdd5a7a4fdbbb1af2f86bf78162c4a982c560228cf20fc7f"
-url = "https://github.com/opentofu/opentofu/releases/download/v1.10.2/tofu_1.10.2_darwin_amd64.tar.gz"
-url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/269065928"
+checksum = "sha256:44bb1855f372f17f365fb94517906e78da5001da10f4c98de57a39bf982f3a92"
+url = "https://github.com/opentofu/opentofu/releases/download/v1.12.6/tofu_1.12.6_darwin_amd64.tar.gz"
+url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/520762655"
 
 [tools.opentofu."platforms.windows-x64"]
-checksum = "sha256:fd25a96008f62ffff9a8450fb6d9f958e76a106a36c3f45a75fc9b20d8035cbf"
-url = "https://github.com/opentofu/opentofu/releases/download/v1.10.2/tofu_1.10.2_windows_amd64.tar.gz"
-url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/269065916"
+checksum = "sha256:bcbcd9ca744af6c4053e2d5e75dae79ff33ad7dc38d45e1233e693d096284538"
+url = "https://github.com/opentofu/opentofu/releases/download/v1.12.6/tofu_1.12.6_windows_amd64.tar.gz"
+url_api = "https://api.github.com/repos/opentofu/opentofu/releases/assets/520762708"
 
 [[tools.terragrunt]]
 version = "1.1.6"
