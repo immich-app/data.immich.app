@@ -1,0 +1,14 @@
+{
+  "name": "mise-npm-install",
+  "private": true,
+  "aube": {
+    "allowBuilds": {
+      "esbuild": true,
+      "sharp": true,
+      "workerd": true
+    }
+  },
+  "dependencies": {
+    "wrangler": "4.145.0"
+  }
+}
