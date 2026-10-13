@@ -36,7 +36,7 @@ jobs:
           permission-contents: read
 
       - name: Setup Mise
-        uses: immich-app/devtools/actions/use-mise@06a9ef925332c91be647d6256642b86b398592c8 # use-mise-action-v3.2.1
+        uses: immich-app/devtools/actions/use-mise@b5d01f97c667b7a5ff8818596d0d12983da32e7e # use-mise-action-v3.2.2
         with:
           github_token: ${{ steps.token.outputs.token }}
 
@@ -47,7 +47,7 @@ jobs:
         run: npm run build
 
       - name: Upload build output
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: build-output-${{ matrix.name }}
           if-no-files-found: error
@@ -60,7 +60,7 @@ jobs:
     needs: build
     steps:
       - name: Merge Artifacts
-        uses: actions/upload-artifact/merge@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact/merge@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: build-output
           retention-days: 1
@@ -81,7 +81,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: 'Get build artifact'
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: build-output
           path: '${{ github.workspace }}/dist'
@@ -97,7 +97,7 @@ jobs:
           permission-contents: read
 
       - name: Setup Mise
-        uses: immich-app/devtools/actions/use-mise@06a9ef925332c91be647d6256642b86b398592c8 # use-mise-action-v3.2.1
+        uses: immich-app/devtools/actions/use-mise@b5d01f97c667b7a5ff8818596d0d12983da32e7e # use-mise-action-v3.2.2
         with:
           github_token: ${{ steps.token.outputs.token }}
 
@@ -127,7 +127,7 @@ jobs:
         run: mise run deploy
 
       - name: Comment
-        uses: immich-app/devtools/actions/sticky-comment@0135acd12ad9f3369b94a2aa3c0ae8c835a4e926 # sticky-comment-action-v1.0.0
+        uses: immich-app/devtools/actions/sticky-comment@5f79a5a552b30a23aa7984ffa06c3dbfaf4330f6 # sticky-comment-action-v1.1.0
         if: ${{ github.event_name == 'pull_request' }}
         with:
           id: web-pr-url
