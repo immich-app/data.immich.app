@@ -9,6 +9,6 @@
     }
   },
   "dependencies": {
-    "wrangler": "4.149.0"
+    "wrangler": "4.151.0"
   }
 }
