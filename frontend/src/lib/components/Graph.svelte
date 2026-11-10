@@ -1,6 +1,6 @@
 <script lang="ts">
-  import '$lib/app.css';
-  import { debounce } from '$lib/utils';
+  import '#lib/app.css';
+  import { debounce } from '#lib/utils.ts';
   import { LoadingSpinner, Theme, themeManager } from '@immich/ui';
   import uPlot, { type Axis } from 'uplot';
 

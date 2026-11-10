@@ -1,7 +1,7 @@
 <script lang="ts">
-  import '$lib/app.css';
-  import PageContent from '$lib/components/layout/PageContent.svelte';
-  import { backendUrl } from '$lib/environment';
+  import '#lib/app.css';
+  import PageContent from '#lib/components/layout/PageContent.svelte';
+  import { backendUrl } from '#lib/environment.ts';
   import {
     AppShell,
     AppShellHeader,
