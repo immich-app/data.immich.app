@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { siteMetadata } from '$lib';
-  import '$lib/app.css';
-  import DateCard from '$lib/components/DateCard.svelte';
-  import GraphCard from '$lib/components/GraphCard.svelte';
-  import Graph from '$lib/components/Graph.svelte';
-  import SectionGrid from '$lib/components/SectionGrid.svelte';
-  import SectionTitle from '$lib/components/SectionTitle.svelte';
+  import { siteMetadata } from '#lib';
+  import '#lib/app.css';
+  import DateCard from '#lib/components/DateCard.svelte';
+  import GraphCard from '#lib/components/GraphCard.svelte';
+  import Graph from '#lib/components/Graph.svelte';
+  import SectionGrid from '#lib/components/SectionGrid.svelte';
+  import SectionTitle from '#lib/components/SectionTitle.svelte';
   import {
     discordMembers,
     githubDiscussions,
@@ -15,7 +15,7 @@
     githubStars,
     load,
     redditMembers,
-  } from '$lib/services/api.svelte';
+  } from '#lib/services/api.svelte.ts';
   import { Constants, Container, Heading, SiteMetadata, Text } from '@immich/ui';
   import { mdiAccountGroup, mdiBugOutline, mdiMessageOutline, mdiSourceBranch, mdiStarOutline } from '@mdi/js';
   import { DateTime } from 'luxon';
