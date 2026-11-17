@@ -1,5 +1,5 @@
 [tools]
-opentofu = "1.13.8"
+opentofu = "1.13.9"
 terragrunt = "1.2.2"
 node = "26.13.1"
 wrangler = "4.160.1"
