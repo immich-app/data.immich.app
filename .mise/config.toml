@@ -1,7 +1,7 @@
 [tools]
 opentofu = "1.13.8"
 terragrunt = "1.2.1"
-node = "26.13.0"
+node = "26.13.1"
 wrangler = "4.158.0"
 
 [tasks.deploy]
