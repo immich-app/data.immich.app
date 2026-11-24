@@ -130,10 +130,10 @@ url = "https://github.com/gruntwork-io/terragrunt/releases/download/v1.2.2/terra
 url_api = "https://api.github.com/repos/gruntwork-io/terragrunt/releases/assets/735923751"
 
 [[tools.wrangler]]
-version = "4.161.0"
-aube = { path = "locks/wrangler/4.161.0~d1f80b8e", digest = "sha256:28e9f5f9e557df97d2738f2cbb0fdf5d0255a6cd1ec3d2e3d6906c99ddb3a207" }
+version = "4.165.0"
+aube = { path = "locks/wrangler/4.165.0~d1f80b8e", digest = "sha256:a042de7dbb6f11b898fe9b20c4f994e379d9c463faac02af99eb7100931d0930" }
 backend = "npm:wrangler"
-specifiers = ["4.161.0"]
+specifiers = ["4.165.0"]
 
 [tools.wrangler.options]
 allow_builds = '["esbuild", "sharp", "workerd"]'
